@@ -1,0 +1,2 @@
+#routeName,depTime,numPpltravelTime,routeName2,routeName3
+RT1,0,10,10.6,RT2,emp
