@@ -1,5 +1,6 @@
 package anisopedctm;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -20,6 +21,7 @@ public class Group {
 	private double meanTTSimulated; // Simulated travel time (Travel time of each group at the end of the simulation)
 	private double stdDevTTSimulated; // Simulated travel time (Travel time of each group at the end of the simulation)
 	private double relLoss; // relative loss (Number of pedestrians that reached the end over numPeople)
+        private ArrayList<String> routeOptions;
 
 	// constructor
 	public Group(String rName, int depT, double numPeople) {
@@ -29,6 +31,18 @@ public class Group {
 		this.numPeople = numPeople;
 		this.travelTimes = new Hashtable<Integer, Double>();
 		this.relLoss = 0.0;
+                this.routeOptions = new ArrayList<String>();
+                this.routeOptions.add(rName);
+	}
+        
+        public Group(String rName, int depT, double numPeople, ArrayList<String> routeOptions) {
+		this.routeName = rName;
+//                this.routeOptions = new Hashtable<Integer, String>();
+		this.depTime = depT;
+		this.numPeople = numPeople;
+		this.travelTimes = new Hashtable<Integer, Double>();
+		this.relLoss = 0.0;
+                this.routeOptions = routeOptions;
 	}
 
 	public Hashtable<Integer, Double> getTravelTimes() {

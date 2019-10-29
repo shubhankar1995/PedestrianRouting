@@ -3,6 +3,7 @@ package anisopedctm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -880,6 +881,7 @@ public class Input {
 		//current route and route name
 		Route curRoute;
 		String curRouteName;
+                double routeDistance;
 
 		//zone sequence
 		String[] zoneSeq; //mathematically: origZone, innerZones, destZone
@@ -899,9 +901,11 @@ public class Input {
 
 				//retrieve zone sequence
 				zoneSeq = lineElements[1].split("-");
+                                
+                                routeDistance = Double.parseDouble(lineElements[2]);
 
 				//generate route
-				curRoute = new Route(zoneSeq);
+				curRoute = new Route(zoneSeq, routeDistance);
 
 				//for each zone, check feasibility and add route nodes
 				for (String zoneName : zoneSeq){
@@ -1112,6 +1116,8 @@ public class Input {
 		//line number, starting on second line
 		//line number also used as group ID
 		int lineNr = 1;
+                
+                
 
 		//extract information from each line
 		try {
@@ -1138,7 +1144,17 @@ public class Input {
 				}
 
 				//generate group
-				curGroup = new Group(routeName, depTime, numPeople);
+                                ArrayList<String> routeOptions= new ArrayList<String>();
+                                
+                                if (!lineElements[3].equals("NA")){
+                                    routeOptions.add(lineElements[3]);
+                                }
+                                
+                                if (!lineElements[4].equals("NA")){
+                                    routeOptions.add(lineElements[4]);
+                                }
+                                
+				curGroup = new Group(routeName, depTime, numPeople, routeOptions);
 
 				//add current group to group list, using lineNr as groupID
 				groupList.put(lineNr-1, curGroup);

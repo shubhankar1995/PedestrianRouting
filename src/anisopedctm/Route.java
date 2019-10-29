@@ -27,15 +27,18 @@ public class Route {
 
 	//set of node IDs associated with route
 	private Set<Integer> routeNodeIDs;
+        
+        private double routeDistance;
 
 	//constructor
-	public Route(String[] zSeq) {
+	public Route(String[] zSeq, double routeDistance) {
 		zoneSeq = zSeq.clone();
 
 		origZone = zSeq[0];
 		destZone = zSeq[zSeq.length-1];
 
 		routeNodeIDs = new HashSet<Integer>();
+                this.routeDistance = routeDistance;
 	}
 
 	public void setSourceLinkID(int linkID) {
