@@ -1,148 +1,350 @@
 package anisopedctm;
 
 import java.util.Hashtable;
-import static java.lang.Math.exp;
-
 
 /**
- * Represents OD and travel time information of a 'real' pedestrian.
- * Used for calibration only.
- *
- * @author Flurin Haenseler
+ * Parameter class
+ * 
+ * @author Flurin Haenseler, Gael Lederrey
  */
 
-public class Pedestrian {
-	private final String routeName; //observed rout e
+public class Parameter {
+
+	/*
+	 * Contains input and derived parameters for
+	 * fundamental diagram and route choice
+	 */
+
+	// numerical tolerance
+	public static double absTol = 1e-6;
+
+	public static final Hashtable<String,Integer> linkAngles = new Hashtable<String,Integer>() {/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+	{
+		put("N->E", 315); put("N->S", 270); put("N->W", 225);
+		put("E->N", 135); put("E->W", 180); put("E->S", 225);
+		put("S->E", 45); put("S->N", 90); put("S->W", 135);
+		put("W->S", 315); put("W->E", 0); put("W->N", 45); }};
+
+	// parameters of fundamental diagram (a priori known)
+	private Double freeSpeed; //free-flow speed
+
+	// Shape parameters
+	private Double[] shapeParam;
+
+	// parameter of route choice model (a priori known)
+	private Double mu; //weight in logit model
 	
-	private final double depTime; //observed departure time
+	// parameter names
+	private String[] paramNames;
+
+	// parameter for CFL conditions
+	private double cflFactor;
+
+	// derived parameters
+	private Double minLinkLength; //shortest link length
+	private Double deltaT; // deltaT=minLinkLength/freeSpeed
+
+	//numerical parameters associated with FunDiag
+	public static double velNdInit = 0.5; //initial guess of non-dimensional speed
+	public static int maxEvaluations = 1000; //parameter of Levenberg-Marquardt and Newton-Raphson algorithm
+	public static int maxIterations = 1000; //parameter of Levenberg-Marquardt algorithm
+	public static double maxDensity = 5.4; //upper density bound in Brent's algorithm (1D FD CP)
+	public static double Tolerance = 1e-6; //absolute and relative tolerance of various solvers
+
+	public static double stepSizeHessian = 1e-4; //step size for computation of Hessian
+
+	// maximum number of lines and maximum line length in layout file
+	public static final int LimitLinesNumber = 20000;
+	public static final int LimitLineLength = 1000;
+
+	// maximum travel time (simulation stops MaxTravelTime after the last departure of a group)
+	public static final int MaxTravelTime = 1000;
+
+	// Name of the fundamental diagrams in use
+	private final String funDiagName;
+
+	// visualization
+	public final boolean visualization;
+	public final boolean displayNumbers;
+	public final boolean displayCellNames;
+
+	// write output
+	public final boolean writeOutput;
+
+	// write debug of initialization
+	public final boolean writeDebug;
 	
-	private final double travelTimeObs; //observed travel time
+	// format of the demand
+	public final String demandFormat;
+
+	// Write the aggregated table at the end of the simulation
+	public final boolean writeAggTable;
+
+        public static final double alpha = -0.5;  // ** new
+        public static final double beta = 0.7;     // ** new
         
-        private final String routeName2; // ** new
-        
-        private final String routeName3; // ** new
+	//file paths input
+	public final String inputDir;
+	public final String paramFilePath;
+	public final String paramRangeFilePath;
+	public final String linkFilePath;
+	public final String cellFilePath;
+	public final String routeFilePath;
+	public final String demandFilePath;
+	public final String correspFilePath;
+	public final String disaggTableFilePath;
+
+	//file paths output
+	public final String outputDir;
+	public final String fileNameTTDist;
+	public final String fileNameTTMean;
+	public final String fileNameSystemState;
+	public final String fileNameDebug;
+	public final String fileNameAggTT;
+	public final String fileNameDisAggTT;
+	public final String fileNameCalibStat;
+	public final String fileNameCalibFromDefaultStat;
+	public final String fileNameTravelTimeStat;
+	public final String fileNameCrossValidStat;
 	
-	// constructor
-	public Pedestrian(String rName, double depT, double travT, String rName2, String rName3) { // ** modified the function defination
-		routeName = rName;
-		
-		depTime = depT;
-		
-		travelTimeObs = travT;
-                
-                routeName2 = rName2; // ** new
-                
-                routeName3 = rName3; // ** new
-	}
+	//parameter for calibration
+	public static int numThreads = Runtime.getRuntime().availableProcessors();
+	private double[] paramLowerBound;
+	private double[] paramUpperBound;
+	private final String calibrationMode;
+	private double aggPeriodCalib;
 
-	public String getRouteName() {
-		return routeName;
-	}
-        
-        public String getRouteName2() { // ** new
-		return routeName2;
-	}
-        
-        public String getRouteName3() { // ** new
-		return routeName3;
-	}
+	// Constructor
+	public Parameter(String inDir, String outDir, String paramFile, String paramRangeFile,
+			String linkFile, String cellFile, String routeFile, String funDiag, double cflFact,
+			boolean textOutput, boolean textDebug, boolean visualOut, boolean numbers, boolean cellNames, String correspFile,
+			String demandFormat, String demandFile, boolean writeAggTable, String calibMode, double aggPerCalib) {
 
-	public double getDepTime() {
-		return depTime;
-	}
+		outputDir = outDir;
+		inputDir = inDir;
 
-	public int getDepTimeInt(Parameter param) {
-		return (int) Math.floor(depTime / param.getDeltaT() );
-	}
-	
-	public int getCalibAggTimeInt(Parameter param) {
-		return (int) Math.floor(depTime / param.getAggPeriodCalib() );
-	}
+		paramFilePath = inputDir + paramFile;
+		paramRangeFilePath = inputDir + paramRangeFile;
+		linkFilePath = inputDir + linkFile;
+		cellFilePath = inputDir + cellFile;
+		routeFilePath = inputDir + routeFile;
+		demandFilePath = inputDir + demandFile;
+		correspFilePath = inputDir + correspFile;
 
-	public double getTravelTime() {
-		return travelTimeObs;
-	}
-        
-        public String getStochasticRoute(double travelTime, double travelDistance, String rName, String rName2, String rName3){  //** new
-            
-            double U1 = 0, U2 = 0, U3 = 0;
-            double P1, P2, P3;
-            
-            U1 = Parameter.alpha * travelTime + Parameter.beta * travelDistance;
-            U2 = Parameter.alpha * travelTime + Parameter.beta * travelDistance;
-            U3 = Parameter.alpha * travelTime + Parameter.beta * travelDistance;
-            
-            P1 = exp(U1)/ (exp(U1) + exp(U2) + exp(U3));
-            P2 = exp(U2)/ (exp(U1) + exp(U2) + exp(U3));
-            P3 = exp(U3)/ (exp(U1) + exp(U2) + exp(U3));
-            
-            return null;
-        }
+		funDiagName = funDiag;
+		cflFactor = cflFact;
 
-	//get mean travel time sim
-	public double getMeanTravelTimeSim(Hashtable<Integer, Group> groupList,
-			Parameter param) {
+		visualization = visualOut;
+		displayNumbers = numbers;
+		displayCellNames = cellNames;
+		writeOutput = textOutput;
+		writeDebug = textDebug;
+		this.writeAggTable = writeAggTable;
+		this.demandFormat = demandFormat;
 		
-		Group correspGroup = getCorrespondingGroup(groupList, param);
-		
-		return correspGroup.getMeanTTSimulated();
-	}
-	
-	//get standard deviation of travel time of corresponding group
-	public double getStdDevTravelTimeSim(Hashtable<Integer, Group> groupList,
-			Parameter param) {
-		
-		Group correspGroup = getCorrespondingGroup(groupList, param);
-		
-		return correspGroup.getStdDevTTSimulated();
-	}
-	
-	//get probability of observing the actual travel time given the model
-	public double getTravTimeObsProb(Hashtable<Integer, Group> groupList,
-			Parameter param) {
-		
-		Group correspGroup = getCorrespondingGroup(groupList, param);
-		
-		return correspGroup.getTravTimeProb(travelTimeObs, param);
-	}
+		calibrationMode = calibMode;
+		aggPeriodCalib = aggPerCalib;
 
-	//get simulation group corresponding to pedestrian
-	private Group getCorrespondingGroup(Hashtable<Integer, Group> groupList,
-			Parameter param) {
+		fileNameTTDist = outputDir + "travelTimeDist.txt";
+		fileNameTTMean = outputDir + "travelTimeMean.txt";
+		fileNameSystemState = outputDir + "systemState.txt";
+		fileNameDebug = outputDir + "DebugInitialization.txt";
+		fileNameDisAggTT = outputDir + "disaggODTT_autogenerated.txt";
+		fileNameCalibStat = outputDir + "calibStatistics";
+		fileNameTravelTimeStat = outputDir + "travelTimeStatistics";
+		fileNameCalibFromDefaultStat = outputDir + "calibFromDefaultStatistics";
+		fileNameCrossValidStat =  outputDir + "crossValidStatistics";
 		
-		int depTimeInt = getDepTimeInt(param);
-		Group curGroup;
 		
-		for (Integer groupID : groupList.keySet()) {
-			
-			curGroup = groupList.get(groupID);
-			
-			if ( routeName.equals( curGroup.getRouteName() ) &&
-					( depTimeInt == curGroup.getDepTime() ) ) {
-				return curGroup;
+		if(demandFormat.equals("aggregated"))
+		{
+			fileNameAggTT = demandFilePath;
+			disaggTableFilePath = "";
+		} else { // demandFormat.equals("disaggregated")
+			disaggTableFilePath = demandFilePath;
+			if(writeAggTable == true)
+			{
+				fileNameAggTT = outputDir + "aggDemand.txt";
+			} else {
+				fileNameAggTT = "";
 			}
 		}
+
+		minLinkLength = Double.NaN;
+	}
+
+	//set parameters associated with fundamental diagram and route choice model
+	public void setFDRChParam(double vf, Double[] shapeParam, double mu) {
+
+		this.shapeParam = new Double[shapeParam.length];
+		this.shapeParam = shapeParam;
 		
-		//if no corresponding group found, throw exception
-		throw new IllegalArgumentException("No corresponding group found " +
-				"for current pedestrian (depTime = " + depTime + 
-				", routeName = " + routeName + ")" );
-	}
-	
-	
-	// return squared error between observed and simulated travel time
-	public double getSquaredError(Hashtable<Integer, Group> groupList, Parameter param) {
-		return Math.pow(travelTimeObs - getMeanTravelTimeSim(groupList, param), 2);
-	}
-	
-	// returns entry for disaggregate table
-	public String disAggTableEntry(Hashtable<Integer, Group> groupList, Parameter param)
-	{
-		String disAggEntry;
-		disAggEntry = routeName + ", " + String.valueOf(depTime) + ", " +
-				String.valueOf(travelTimeObs) + ", " + getMeanTravelTimeSim(groupList, param) + "\n";
+		this.freeSpeed = vf;
+		
+		this.mu = mu;
 
-		return disAggEntry;
+		// Recaculate the deltaT (Used for the Calibration)
+		if(!this.minLinkLength.isNaN())
+		{
+			this.deltaT = cflFactor*this.minLinkLength/vf;
+		}
+	}
+	
+	public void setParamNames(String[] parNames) {
+		paramNames = parNames.clone();
+	}
+	
+	public void setCalibSearchRange(double freeSpeedMin, double freeSpeedMax,
+			Double[] shapeParamMin, Double[] shapeParamMax, double muMin,
+			double muMax) {
+		
+		// number of shape parameters
+		int numShapeParam = shapeParamMin.length;
+		
+		//initialize lower and upper bound
+		paramLowerBound = new double[2+numShapeParam];
+		paramUpperBound = new double[2+numShapeParam];
+		
+		paramLowerBound[0] = freeSpeedMin;
+		paramUpperBound[0] = freeSpeedMax;
+		
+		for (int i=0; i < numShapeParam; i++){
+			paramLowerBound[i+1] = shapeParamMin[i];
+			paramUpperBound[i+1] = shapeParamMax[i];
+		}
+		
+		paramLowerBound[numShapeParam+1] = muMin;
+		paramUpperBound[numShapeParam+1] = muMax;
 	}
 
+	/*
+	 * Getters and Setters for private variables
+	 */
+
+	public double getCFL() {
+		return cflFactor;
+	}
+	
+	public double getFreeSpeed() {
+		return freeSpeed;
+	}
+
+	public Double[] getShapeParam() {
+		return shapeParam;
+	}
+
+	public String getParamName(int i) {
+		return paramNames[i];
+	}
+	
+	public double getMu() {
+		return mu;
+	}
+
+	public double[] getParamLowerBound() {
+		return paramLowerBound;
+	}
+
+	public double[] getParamUpperBound() {
+		return paramUpperBound;
+	}
+
+	public String getFunDiagName() {
+		return funDiagName;
+	}
+
+	public String getFileNameDemand() {
+		return demandFilePath;
+	}
+
+	public String getFileNameTTDist() {
+		return fileNameTTDist;
+	}
+
+	public String getFileNameTTMean() {
+		return fileNameTTMean;
+	}
+
+	public String getFileNameSystemState() {
+		return fileNameSystemState;
+	}
+
+	public String getFileNameDebug() {
+		return fileNameDebug;
+	}
+
+	public String getOutputDir() {
+		return outputDir;
+	}
+
+	public double getMinLinkLength() {
+		return minLinkLength;
+	}
+	
+	public String getCalibMode() {
+		return calibrationMode;
+	}
+	
+	public double getAggPeriodCalib() {
+		return aggPeriodCalib;
+	}
+
+	//set minimum link length and length of time interval
+	public void setMinLinkLength(double d) {
+		this.minLinkLength = d;
+		this.deltaT = cflFactor*d/this.freeSpeed;
+
+		if (!(this.deltaT > 0.0))
+		{
+			throw new IllegalArgumentException("Invalid cfl (" + cflFactor + ") or vf (" +
+					+ this.freeSpeed + ") resulting in invalid deltaT (" + this.deltaT + ")");
+		}
+	}
+
+	public double getDeltaT() {
+		return deltaT;
+	}
+	
+	public String getDemandFormat() {
+		return demandFormat;
+	}
+
+	public String getFileNameDisaggTable() {
+		return disaggTableFilePath;
+	}
+
+	public String getFileNameAggTable() {
+		return fileNameAggTT;
+	}
+	
+	public String getFileNameDisAggTable() {
+		return fileNameDisAggTT;
+	}
+
+	public boolean getWriteAggTable() {
+		return writeAggTable;
+	}
+	
+	public int getNumParam() {
+		return 2+shapeParam.length; //mu+vf+shape parameters
+	}
+	
+	public double[] getRandomParameter(){
+		int numParam = getNumParam();
+		
+		double[] paramVec = new double[numParam];
+		
+		for(int i=0; i<numParam; i++){
+			double r = Math.random();
+			paramVec[i] = r*(paramUpperBound[i] - paramLowerBound[i]) + paramLowerBound[i];
+		}
+		
+		return paramVec;
+	}
+
+	
 }
