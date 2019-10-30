@@ -1,3 +1,4 @@
+
 package anisopedctm;
 
 import java.io.File;
@@ -551,9 +552,9 @@ public class Board {
 			
 			double logLikelihood = 0.0;
 			
-			for (int pedID = 0; pedID < pedList.size(); pedID++) {
-				logLikelihood += Math.log( pedList.get(pedID).getTravTimeObsProb(groupList, param) );
-			}
+//			for (int pedID = 0; pedID < pedList.size(); pedID++) {
+////				logLikelihood += Math.log( pedList.get(pedID).getTravTimeObsProb(groupList, param) );
+//			}
 			
 			//System.out.println("logLikelihood: " + logLikelihood);
 			

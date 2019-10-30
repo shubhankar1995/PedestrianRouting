@@ -86,8 +86,8 @@ public class AnisoPedCTM {
 			//run board and generate travel time statistics
 //			board.getTravTimeStat();
 	
-			System.out.println("Exp " + exp.split("_")[0] +
-					"-- log-likelihood: " + board.getLogLikelihood() );
+//			System.out.println("Exp " + exp.split("_")[0] +
+//					"-- log-likelihood: " + board.getLogLikelihood() );
 		});
 		
 		
