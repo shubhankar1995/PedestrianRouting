@@ -241,6 +241,7 @@ public class Board {
 		double numPeople; //size of current group
 //		String routeName; //route of current group
 		int sourceLinkID = -1; //source link of current group	//TODO: check this default value
+		ArrayList<Group> subGroupList = new ArrayList<>();
 		
 		Route curRoute;
 		Group curGroup;
@@ -262,28 +263,33 @@ public class Board {
 				if (timeStep == depTime) {
 					//get route and source link of current group
 
+					ArrayList<Group> subGroupListOfCurGroup = new ArrayList<>();
+					
+					
+//					Calculate average critical speed of all cells along the node encompassing the routes
 					for (String routeName : curGroup.getRouteOptions()) {
+						
 						if (null == routeName || routeName.isEmpty()) {
-							System.out.println("routeName is null, which it cannot be.");
+							System.out.println("routeName cannot be null or empty.");
 							continue;
 						}
+						
 						ArrayList<Double> critVelListPerRoute = new ArrayList();
 						String curAdjCell;
 						Hashtable<String, String> adjCells = new Hashtable<String, String>();
+						Set<Integer> nodeIds = new HashSet();
+						HashSet<String> adjacentCellsOfNode = new HashSet();
+						
 
 						//					routeName = groupList.get(groupID).getRouteName();
 						curRoute = routeList.get(routeName);
 						sourceLinkID = curRoute.getSourceLinkID();
 
-
-						Set<Integer> nodeIds = new HashSet();
-						HashSet<String> adjacentCellsOfNode = new HashSet();
-
 						nodeIds = curRoute.getRouteNodes();
 
 						for(Integer nodeId: nodeIds) {
 							curNode = nodeList.get(nodeId);
-							adjacentCellsOfNode.addAll(curNode.getadjacentCells());
+							adjacentCellsOfNode.addAll(curNode.getadjacentCells());		//HashSet will only have unique cells
 						}
 
 						adjacentCellsOfNode.remove(noneCell);
@@ -291,8 +297,8 @@ public class Board {
 						for (String curCell: adjacentCellsOfNode) {
 							Cell cell = cellList.get(curCell);
 							adjCells = cell.adjCellPos;
+							
 							Enumeration<String> adjcellKeys = adjCells.keys();
-
 							while(adjcellKeys.hasMoreElements()) {
 								curAdjCell = adjcellKeys.nextElement();
 								double critVel;
@@ -311,14 +317,30 @@ public class Board {
 					}
 
 					//TODO: call stochastic formula and alter numPeople of the main-group
-					//get group size
-					numPeople = groupList.get(groupID).getNumPeople();
-
-					//				TODO: do probability calculation and group fragmentation here.
 					
-					//add group to source link
+					subGroupListOfCurGroup = curGroup.performStochasticRoute(curGroup, routeList);
+					curGroup.setNumPeople(subGroupListOfCurGroup.get(0).getNumPeople());
+					subGroupListOfCurGroup.remove(0);
+					
+					//Adding people to the fragment
+					numPeople = curGroup.getNumPeople();
+					sourceLinkID = routeList.get(curGroup.getRouteName()).getSourceLinkID();	//sourceLinkID as per route of the subgroup
 					linkList.get(sourceLinkID).addFrag(groupID, numPeople);
-
+					
+					int size = 0;
+					for (Group subGroup: subGroupListOfCurGroup) {
+						//insert subgroup at the end of the main groupList
+						size = groupList.size();
+						groupList.put(size, subGroup);	
+						
+						numPeople = subGroup.getNumPeople();
+						sourceLinkID = routeList.get(subGroup.getRouteName()).getSourceLinkID();	//sourceLinkID as per route of the subgroup
+						linkList.get(sourceLinkID).addFrag(size, numPeople);	//add group to source link
+					}
+					
+					
+//					subGroupList.addAll(subGroupListOfCurGroup);
+					
 					//output time step on screen
 					//timeStepLog(timeStep);
 				}
