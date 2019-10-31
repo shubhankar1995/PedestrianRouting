@@ -94,10 +94,10 @@ public class Group {
     }
 
     // Return the squared error between meanTTObserved and meanTTSimulated times numPeople
-//	public double getWeightedSquaredError()
-//	{
-//		return numPeople*Math.pow(meanTTObserved-meanTTSimulated, 2);
-//	}
+//  public double getWeightedSquaredError()
+//  {
+//      return numPeople*Math.pow(meanTTObserved-meanTTSimulated, 2);
+//  }
     // Getter and Setter functions
     public String getRouteName() {
         return this.routeName;
@@ -176,6 +176,10 @@ public class Group {
     public double getRelLoss() {
         return this.relLoss;
     }
+    
+    public void setNumPeople(double numPeople) {
+        this.numPeople = numPeople;
+    }
 
     public ArrayList<Group> performStochasticRoute(Group group, Hashtable<String, Route> routeList) {  //** new
 
@@ -201,9 +205,9 @@ public class Group {
 
         for (int i = 0; i < allRouteOptions.size(); i++) {
             if (allRouteOptions.get(i).equals(origRouteName)) {
-                groupList.add(0, new Group(allRouteOptions.get(i), group.getDepTime(), probList.get(i) * totNumPeople, routeOptions));
+                groupList.add(0, new Group(allRouteOptions.get(i), group.getDepTime(),Math.floor( probList.get(i) * totNumPeople), routeOptions));
             } else {
-                groupList.add(new Group(allRouteOptions.get(i), group.getDepTime(), probList.get(i) * totNumPeople, routeOptions));
+                groupList.add(new Group(allRouteOptions.get(i), group.getDepTime(), Math.floor(probList.get(i) * totNumPeople), routeOptions));
             }
         }
 
