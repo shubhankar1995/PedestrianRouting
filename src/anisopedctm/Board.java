@@ -263,6 +263,10 @@ public class Board {
 					//get route and source link of current group
 
 					for (String routeName : curGroup.getRouteOptions()) {
+						if (null == routeName || routeName.isEmpty()) {
+							System.out.println("routeName is null, which it cannot be.");
+							continue;
+						}
 						ArrayList<Double> critVelListPerRoute = new ArrayList();
 						String curAdjCell;
 						Hashtable<String, String> adjCells = new Hashtable<String, String>();
@@ -311,7 +315,7 @@ public class Board {
 					numPeople = groupList.get(groupID).getNumPeople();
 
 					//				TODO: do probability calculation and group fragmentation here.
-
+					
 					//add group to source link
 					linkList.get(sourceLinkID).addFrag(groupID, numPeople);
 
@@ -673,9 +677,5 @@ public class Board {
 		
 		calib.crossValidateMulti(disAggDemTables);		
 	}
-	
-	
-	
-	
 	
 }
