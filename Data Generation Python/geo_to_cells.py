@@ -432,7 +432,7 @@ fig, ax = ox.plot_graph_route(G4, route, node_size=0)
 
 ODMatrixList = []
 
-demand_dict = {'routeName':[], 'depTime':[], 'travelTime':[], 'routeName2':[],'routeName3':[]}
+demand_dict = {'routeName':[], 'depTime':[], 'numPpl':[], 'travelTime':[], 'routeName2':[],'routeName3':[]}
 
 def getNormalizedTime(min_time, curr_time):
     temp_time = dt.datetime.strptime(curr_time, '%H:%M')
@@ -461,17 +461,33 @@ for row in ODMatrixList:
     demand = int(row[3])
     routes_dict = getRouteData(row[0], row[1], serial_num)
     routes_data_dict = mergeRouteDataDict(routes_data_dict, routes_dict)
+    num_routes = len(routes_dict['routeName'])
+    if num_routes >= 1:
+    	demand_dict['routeName'].append(routes_dict['routeName'][0])
+    else:
+    	demand_dict['routeName'].append('NA')
+    if num_routes >= 2:
+	    demand_dict['routeName2'].append(routes_dict['routeName'][1])           #changes made here for testing
+    else:
+    	demand_dict['routeName2'].append('NA')
+    if num_routes >= 3:
+    	demand_dict['routeName3'].append(routes_dict['routeName'][2])
+    else:
+    	demand_dict['routeName3'].append('NA')
+    demand_dict['numPpl'].append(str(demand))
+    demand_dict['depTime'].append(str(start_time))
+    demand_dict['travelTime'].append(str(TRAVEL_TIME))
     serial_num = serial_num + 1
-    rd.seed(10)
-    TIME_INCREMENT_temp = (15*60)/demand
-    if (TIME_INCREMENT_temp < TIME_INCREMENT):
-        TIME_INCREMENT = TIME_INCREMENT_temp
-    for i in range(demand):
-        demand_dict['routeName'].append(routes_dict['routeName'][0])
-        demand_dict['routeName2'].append(routes_dict['routeName'][0])           #changes made here for testing
-        demand_dict['routeName3'].append(routes_dict['routeName'][0])
-        demand_dict['depTime'].append(str(start_time + i*rd.uniform(0,TIME_INCREMENT)))
-        demand_dict['travelTime'].append(str(TRAVEL_TIME))
+    # rd.seed(10)
+    # TIME_INCREMENT_temp = (15*60)/demand
+    # if (TIME_INCREMENT_temp < TIME_INCREMENT):
+    #     TIME_INCREMENT = TIME_INCREMENT_temp
+    # for i in range(demand):
+    #     demand_dict['routeName'].append(routes_dict['routeName'][0])
+    #     demand_dict['routeName2'].append(routes_dict['routeName'][0])           #changes made here for testing
+    #     demand_dict['routeName3'].append(routes_dict['routeName'][0])
+    #     demand_dict['depTime'].append(str(start_time + i*rd.uniform(0,TIME_INCREMENT)))
+    #     demand_dict['travelTime'].append(str(TRAVEL_TIME))
 
 demand_data = pd.DataFrame.from_dict(demand_dict)
 demand_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_demand_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
