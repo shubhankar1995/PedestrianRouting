@@ -19,7 +19,7 @@ NUM_CELLS_PER_WIDTH = 2
 NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
 DISTANCE_RANGE = 100
-#START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
+# START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
 START_ADDRESS = 'Alberta St, Sydney'
 
 
@@ -61,10 +61,10 @@ def translateLength(node):
     translatedLength = (length // CELL_EDGE_LENGTH) * CELL_EDGE_LENGTH
     return translatedLength
 
-def getCellCount(length):
+def getCellCount(node):
     global CELL_EDGE_LENGTH
     global NUM_CELLS_PER_WIDTH
-    count = ((translateLength(length))//CELL_EDGE_LENGTH) * NUM_CELLS_PER_WIDTH
+    count = ((translateLength(node))//CELL_EDGE_LENGTH) * NUM_CELLS_PER_WIDTH
     return count
 
 def getCellName(osmId, serial):
@@ -103,7 +103,7 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     px1, py1 = getPerprndicularCoordinates(dx1, dy1, slope, serial_num)
     px2, py2 = getPerprndicularCoordinates(dx2, dy2, slope, serial_num)
     print(str(int(nor_lat1)) + ' ' + str(int(nor_lon1)) + ' ' + str(int(nor_lat2)) + ' ' + str(int(nor_lon2)))
-    cord = '(' + str(dx1) + '|' + str(dy1) +')' + ' (' + str(px1) + '|' + str(py1) +')' + ' (' + str(dx2) + '|' + str(dy2) +')' + ' (' + str(dx2) + '|' + str(dy2) +')'
+    cord = '(' + str(dx1) + '|' + str(dy1) +')' + ' (' + str(px1) + '|' + str(py1) +')' + ' (' + str(px2) + '|' + str(py2) +')' + ' (' + str(dx2) + '|' + str(dy2) +')'
     print(cord)
     return cord
 
