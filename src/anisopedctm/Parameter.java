@@ -97,6 +97,7 @@ public class Parameter {
 	public final String demandFilePath;
 	public final String correspFilePath;
 	public final String disaggTableFilePath;
+	public final String blockageFilePath;
 
 	//file paths output
 	public final String outputDir;
@@ -122,7 +123,7 @@ public class Parameter {
 	public Parameter(String inDir, String outDir, String paramFile, String paramRangeFile,
 			String linkFile, String cellFile, String routeFile, String funDiag, double cflFact,
 			boolean textOutput, boolean textDebug, boolean visualOut, boolean numbers, boolean cellNames, String correspFile,
-			String demandFormat, String demandFile, boolean writeAggTable, String calibMode, double aggPerCalib) {
+			String demandFormat, String demandFile, boolean writeAggTable, String calibMode, double aggPerCalib, String blockageFile) {
 
 		outputDir = outDir;
 		inputDir = inDir;
@@ -134,6 +135,7 @@ public class Parameter {
 		routeFilePath = inputDir + routeFile;
 		demandFilePath = inputDir + demandFile;
 		correspFilePath = inputDir + correspFile;
+		blockageFilePath = inputDir + blockageFile;
 
 		funDiagName = funDiag;
 		cflFactor = cflFact;

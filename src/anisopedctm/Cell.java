@@ -15,7 +15,7 @@ import java.util.Hashtable;
 public class Cell{
 
 	public final String zone; // zone
-	public final double areaSize; // surface size
+	public double areaSize; // surface size
 
 	public final float[] coordinates; // coordinates for drawing
 

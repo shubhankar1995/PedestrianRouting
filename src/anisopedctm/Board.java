@@ -30,6 +30,7 @@ public class Board {
 	private Hashtable<Integer, Node> nodeList;
 	private Hashtable<String, Route> routeList;
 	private Hashtable<Integer, Group> groupList; //represents demand
+	private Hashtable<String, Blockage> blockageList;
 	
 	private Hashtable<Integer, Pedestrian> pedList; //disaggregate OD table (for calibration only)
 
@@ -78,6 +79,8 @@ public class Board {
 
 		routeList = input.loadRoutes(cellList, zoneList, linkList, nodeList, param);
 		
+		blockageList = input.loadBlockages(param);
+		
 		//load demand either from disaggregate or from aggregated table
 		if(param.getDemandFormat().equals("disaggregate")) {
 			pedList = input.loadDisAggDemand(param.getFileNameDisaggTable(), routeList);
@@ -114,6 +117,8 @@ public class Board {
 
 		//perform simulation
 		//simulation stops maxTravelTime after the last departure
+		
+		//TODO: change maxTime calculation logic for the loop to end at right time
 		int maxTime = getLastDeparture() + Parameter.MaxTravelTime;
 
 		double totAcc;
@@ -135,7 +140,6 @@ public class Board {
 				visualization.drawPictures(timeStep, cellList, linkList, param);
 			}
 			
-			Double v_crit = visualization.critValues.get("critVel");
 
 			// We had the condition to stop if there isn't any pedestrian in the cells
 
@@ -166,8 +170,34 @@ public class Board {
 
 	}
 	
+	//Reduce usable cell area if there's a blockage that starts at the particular timeStep or 
+	//increase it and bring back to original if blockage is fixed. 
+	public void considerCellBlockage(int timeStep) {
+		
+		String blockName;
+		Blockage blockage;
+		Cell cell;
+		
+		Enumeration<String> enumBlocks = this.blockageList.keys();
+		while (enumBlocks.hasMoreElements()) {
+			blockName = enumBlocks.nextElement();
+			blockage = blockageList.get(blockName);
+			
+			if(blockage.getStartTime() == timeStep ) {
+				cell = this.cellList.get(blockName);
+				cell.areaSize = cell.areaSize * (100 - blockage.getBlockagePercent())/100;
+			} else if (blockage.getEndTime() == timeStep) {
+				cell = this.cellList.get(blockName);
+				cell.areaSize = 100 * cell.areaSize / (100 - blockage.getBlockagePercent());
+			}	
+		}
+	}
 	
 	public void iterate(int timeStep) {
+		
+		
+//		this.considerCellBlockage(timeStep);
+		
 		//fill sources with entering groups
 		this.fillSources(timeStep);
 
