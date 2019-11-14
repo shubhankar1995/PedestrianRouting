@@ -174,29 +174,24 @@ public class Board {
 	//increase it and bring back to original if blockage is fixed. 
 	public void considerCellBlockage(int timeStep) {
 		
-		String blockName;
-		Blockage blockage;
 		Cell cell;
 		
-		Enumeration<String> enumBlocks = this.blockageList.keys();
-		while (enumBlocks.hasMoreElements()) {
-			blockName = enumBlocks.nextElement();
-			blockage = blockageList.get(blockName);
-			
+		for(Blockage blockage: this.blockageList.values()) {
 			if(blockage.getStartTime() == timeStep ) {
-				cell = this.cellList.get(blockName);
+				cell = this.cellList.get(blockage.getCell());
 				cell.areaSize = cell.areaSize * (100 - blockage.getBlockagePercent())/100;
 			} else if (blockage.getEndTime() == timeStep) {
-				cell = this.cellList.get(blockName);
+				cell = this.cellList.get(blockage.getCell());
 				cell.areaSize = 100 * cell.areaSize / (100 - blockage.getBlockagePercent());
 			}	
 		}
+		
 	}
 	
 	public void iterate(int timeStep) {
 		
 		
-//		this.considerCellBlockage(timeStep);
+		this.considerCellBlockage(timeStep);
 		
 		//fill sources with entering groups
 		this.fillSources(timeStep);
@@ -221,7 +216,7 @@ public class Board {
 		//compute sending capacities
 		for (Link curLink : linkList.values()) {
 			//computes sending capacity hash tables for all fragments on curLink, update candidate inflow
-			curLink.setSendCap(linkList, nodeList, groupList, param);
+			curLink.setSendCap(linkList, nodeList, groupList, param, blockageList);
 		}
 
 		//propagate people

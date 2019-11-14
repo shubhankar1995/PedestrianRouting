@@ -409,7 +409,7 @@ public class Link {
 
 	//set sending capacities for fragment corresponding to groupID
 	private void setSendCapFrag(int groupID, Hashtable<Integer, Link> linkList, Hashtable<Integer, Node> nodeList,
-		Hashtable<Integer, Group> groupList, Parameter param){
+		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockList){
 
 		//get fragment corresponding to groupID
 		Fragment frag = fragList.get(groupID);
@@ -425,19 +425,20 @@ public class Link {
 
 		double routeSplitFrac; //container for route choice fraction
 		double curSendCap; //container for current sending capacity
-
+		double blockagePercent;
 
 		//iterate over all out links
 		for (int targLinkID : nodeList.get(destNodeID).getOutLinks()){
 			//route choice fraction corresponding to route and target link (obtained from node)
 			//if targLinkID infeasible on current route, NaN is returned
 			routeSplitFrac = getRouteSplitFrac(routeName, targLinkID, linkList, nodeList, param);
-
+			blockagePercent = blockList.get(linkList.get(targLinkID).destCellName).getBlockagePercent();
+			
 			//if out link is part of current route
 			if (Double.isNaN(routeSplitFrac) == false)
 			{
 				//compute sending capacity
-				curSendCap = routeSplitFrac*fragFlow;
+				curSendCap = routeSplitFrac*fragFlow * blockagePercent;
 
 				//set sending capacity
 				frag.setSendCap(targLinkID, curSendCap);
@@ -450,7 +451,7 @@ public class Link {
 
 	//set sending capacities for all fragments
 	public void setSendCap(Hashtable<Integer, Link> linkList, Hashtable<Integer, Node> nodeList,
-		Hashtable<Integer, Group> groupList, Parameter param){
+		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockageList){
 		int groupID; //groupID of current fragment
 
 		//iterate over fragments
@@ -459,7 +460,7 @@ public class Link {
 		    groupID = fragKeys.nextElement();
 
 		    //set sending capacities corresponding to current fragment
-		    setSendCapFrag(groupID, linkList, nodeList, groupList, param);
+		    setSendCapFrag(groupID, linkList, nodeList, groupList, param, blockageList);
 		}
 	}
 
