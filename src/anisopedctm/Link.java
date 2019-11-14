@@ -434,10 +434,14 @@ public class Link {
 			routeSplitFrac = getRouteSplitFrac(routeName, targLinkID, linkList, nodeList, param);
 			
 			availablePercent = 1;
+			
 			String cell = linkList.get(targLinkID).destCellName;
 			
 			if (null != blockList.get(cell)) {
-				availablePercent = (100 - blockList.get(cell).getBlockagePercent())/100;
+				Blockage blockage = blockList.get(cell);
+				if(timeStep >= blockage.getStartTime() && timeStep <= blockage.getEndTime()) {
+					availablePercent = (100 - blockList.get(cell).getBlockagePercent())/100;
+				}
 			}
 			
 			//if out link is part of current route
