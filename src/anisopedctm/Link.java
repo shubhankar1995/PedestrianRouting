@@ -425,20 +425,26 @@ public class Link {
 
 		double routeSplitFrac; //container for route choice fraction
 		double curSendCap; //container for current sending capacity
-		double blockagePercent;
+		double availablePercent = 1;
 
 		//iterate over all out links
 		for (int targLinkID : nodeList.get(destNodeID).getOutLinks()){
 			//route choice fraction corresponding to route and target link (obtained from node)
 			//if targLinkID infeasible on current route, NaN is returned
 			routeSplitFrac = getRouteSplitFrac(routeName, targLinkID, linkList, nodeList, param);
-			blockagePercent = blockList.get(linkList.get(targLinkID).destCellName).getBlockagePercent();
+			
+			availablePercent = 1;
+			String cell = linkList.get(targLinkID).destCellName;
+			
+			if (null != blockList.get(cell)) {
+				availablePercent = (100 - blockList.get(cell).getBlockagePercent())/100;
+			}
 			
 			//if out link is part of current route
 			if (Double.isNaN(routeSplitFrac) == false)
 			{
 				//compute sending capacity
-				curSendCap = routeSplitFrac*fragFlow * blockagePercent;
+				curSendCap = routeSplitFrac*fragFlow * availablePercent;
 
 				//set sending capacity
 				frag.setSendCap(targLinkID, curSendCap);
