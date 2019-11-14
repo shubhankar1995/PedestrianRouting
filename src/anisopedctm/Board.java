@@ -216,7 +216,7 @@ public class Board {
 		//compute sending capacities
 		for (Link curLink : linkList.values()) {
 			//computes sending capacity hash tables for all fragments on curLink, update candidate inflow
-			curLink.setSendCap(linkList, nodeList, groupList, param, blockageList);
+			curLink.setSendCap(linkList, nodeList, groupList, param, blockageList, timeStep);
 		}
 
 		//propagate people

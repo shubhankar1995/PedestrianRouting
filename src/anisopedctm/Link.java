@@ -409,7 +409,7 @@ public class Link {
 
 	//set sending capacities for fragment corresponding to groupID
 	private void setSendCapFrag(int groupID, Hashtable<Integer, Link> linkList, Hashtable<Integer, Node> nodeList,
-		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockList){
+		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockList, int timeStep){
 
 		//get fragment corresponding to groupID
 		Fragment frag = fragList.get(groupID);
@@ -461,7 +461,7 @@ public class Link {
 
 	//set sending capacities for all fragments
 	public void setSendCap(Hashtable<Integer, Link> linkList, Hashtable<Integer, Node> nodeList,
-		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockageList){
+		Hashtable<Integer, Group> groupList, Parameter param, Hashtable<String, Blockage> blockageList, int timeStep){
 		int groupID; //groupID of current fragment
 
 		//iterate over fragments
@@ -470,7 +470,7 @@ public class Link {
 		    groupID = fragKeys.nextElement();
 
 		    //set sending capacities corresponding to current fragment
-		    setSendCapFrag(groupID, linkList, nodeList, groupList, param, blockageList);
+		    setSendCapFrag(groupID, linkList, nodeList, groupList, param, blockageList, timeStep);
 		}
 	}
 
