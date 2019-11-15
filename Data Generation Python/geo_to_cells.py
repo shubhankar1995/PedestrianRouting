@@ -37,6 +37,9 @@ STRAIGHT_LENGTH = 1.5
 TURN_LENGTH = 1.0607
 BI_DIRECTION = 'true'
 
+NEW_MAX_CORD = 50
+NEW_MIN_CORD = 0
+
 def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node_coordinates):
     global NUM_CELLS_PER_ZONE
     cells_dict = {'cellName':[], 'zone':[], 'surfaceSize':[], 'coordinate':[]}
@@ -188,6 +191,19 @@ cell_data = pd.DataFrame.from_dict(cells_dict)
 
 cell_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_cells_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
+# ------------------------------------ Blockage File ------------------------------------------------------#
+
+blockage_dict = {'cellName':[], 'startTime':[], 'endTime':[], 'percentage':[]}
+
+blockage_dict['cellName'] = cells_dict['cellName']
+blockage_dict['startTime'] = [0 for _ in range(len(blockage_dict['cellName']))]
+blockage_dict['endTime'] = [0 for _ in range(len(blockage_dict['cellName']))]
+blockage_dict['percentage'] = [0 for _ in range(len(blockage_dict['cellName']))]
+
+blockage_data = pd.DataFrame.from_dict(blockage_dict)
+
+blockage_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_blockage_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+
 # -------------------------- Code for generating the links -------------------------------------------------#
 
 links_dict = {'cellName':[], 'origCellName':[], 'destCellName':[], 'length':[], 'streamOrig':[], 'streamDest':[], 'boolean bi-directional':[]}
@@ -195,7 +211,7 @@ links_dict = {'cellName':[], 'origCellName':[], 'destCellName':[], 'length':[], 
 #get the cell names while finding the routes
 
 def createLinksData(node_list):
-    print('generating links =', node_list)
+    # print('generating links =', node_list)
     temp_list = []
     for i in range(len(node_list) -1):
         tmp1 = str(node_list[i]) + str(node_list[i+1])
@@ -382,7 +398,7 @@ def createPathEnds(node_list):
 routes_data_dict = {'routeName':[],'zoneSequence':[], 'distance':[]}
 
 def getZoneSequence(node_list):
-    print('route list =', node_list)
+    # print('route list =', node_list)
     temp_list = []
     for i in range(len(node_list) -1):
         tmp1 = str(node_list[i]) + str(node_list[i+1])
@@ -463,17 +479,17 @@ for row in ODMatrixList:
     routes_data_dict = mergeRouteDataDict(routes_data_dict, routes_dict)
     num_routes = len(routes_dict['routeName'])
     if num_routes >= 1:
-    	demand_dict['routeName'].append(routes_dict['routeName'][0])
+        demand_dict['routeName'].append(routes_dict['routeName'][0])
     else:
-    	demand_dict['routeName'].append('NA')
+        demand_dict['routeName'].append('NA')
     if num_routes >= 2:
-	    demand_dict['routeName2'].append(routes_dict['routeName'][1])           #changes made here for testing
+        demand_dict['routeName2'].append(routes_dict['routeName'][1])           #changes made here for testing
     else:
-    	demand_dict['routeName2'].append('NA')
+        demand_dict['routeName2'].append('NA')
     if num_routes >= 3:
-    	demand_dict['routeName3'].append(routes_dict['routeName'][2])
+        demand_dict['routeName3'].append(routes_dict['routeName'][2])
     else:
-    	demand_dict['routeName3'].append('NA')
+        demand_dict['routeName3'].append('NA')
     demand_dict['numPpl'].append(str(demand))
     demand_dict['depTime'].append(str(start_time))
     demand_dict['travelTime'].append(str(TRAVEL_TIME))
@@ -492,10 +508,10 @@ for row in ODMatrixList:
 demand_data = pd.DataFrame.from_dict(demand_dict)
 demand_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_demand_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
-print('route dict =',routes_dict)
+# print('route dict =',routes_dict)
 
 
-print('routes_data_dict =', routes_data_dict)
+# print('routes_data_dict =', routes_data_dict)
 route_data = pd.DataFrame.from_dict(routes_data_dict)
 route_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_route_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
