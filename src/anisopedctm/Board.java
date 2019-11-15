@@ -203,7 +203,7 @@ public class Board {
 		}
 
 		//compute node potentials for all nodes for all routes, pre-compute route choice model
-		potField.computeAllNodePotentials(linkList, nodeList, routeList, sourceSinkNodes, param);
+		potField.computeAllNodePotentials(linkList, nodeList, routeList, sourceSinkNodes, param, blockageList, timeStep);
 
 		//reset flows (sending capacities, candidate inflow, total in- and outflows)
 		for (Link curLink : linkList.values()) {
