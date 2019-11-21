@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -349,7 +350,8 @@ public class Visualization {
 		Enumeration<String> cellKeys = cellList.keys(); //enumeration of all cells
 
 		String curCell;
-
+		int no_of_points = 4;
+		
 		Graphics g = image.getGraphics();
 
 	    Graphics2D g2D = (Graphics2D) g;
@@ -363,10 +365,25 @@ public class Visualization {
 		// We draw the rectangles
 		while(cellKeys.hasMoreElements()) {
 			curCell = cellKeys.nextElement();
-
+			Cell currentCell = cellList.get(curCell);
+			float[] points = currentCell.coordinates; 
+			
+			Polygon poly = new Polygon();
+			
+			for (int i = 0; i < no_of_points; i++) {
+				poly.addPoint((int) points[2*i] * 100, (int) points[2*i + 1] * 100);
+			}
+			
 			// We set the color for the lines
 			g2D.setColor(color);
+			
+//			g2D.drawPolygon(poly);
+//			if (curCell.equals("C183520349318594013630]")) {
+//				g2D.fillPolygon(poly);
+//			}
 			g2D.drawRect(cellXPosition.get(curCell), this.imageHeight - (cellYPosition.get(curCell) + cellHeight.get(curCell)), cellWidth.get(curCell), cellHeight.get(curCell));
+			
+		
 		}
 
 		g2D.dispose();
