@@ -18,7 +18,7 @@ CELL_EDGE_LENGTH = 1.5
 NUM_CELLS_PER_WIDTH = 2
 NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
-DISTANCE_RANGE = 100
+DISTANCE_RANGE = 750
 # START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
 START_ADDRESS = 'Alberta St, Sydney'
 
@@ -48,17 +48,17 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
     lat_min_par, long_min_par, lat_max_par, long_max_par = getNormalizeParameter(lat_list, lon_list)
     for node in node_link_list:
         tot_count = int(getCellCount(node))
-        for i in range(tot_count):
+        for i in range(round(tot_count/20)):    #for 150 - 4 and 0.005
             cell_Name = getCellName(str(node[0]) + str(node[1]) ,i)
             cells_dict['cellName'].append(cell_Name)
             cells_dict['zone'].append(getZoneName(str(node[0]) + str(node[1]) ,ceil(i//NUM_CELLS_PER_ZONE)))
             cells_dict['surfaceSize'].append(getSurfaceArea())
-            cells_dict['coordinate'].append(getCoordinates(lat_min_par, long_min_par, node, node_coordinates, i, tot_count))
+            cells_dict['coordinate'].append(getCoordinates(lat_min_par, long_min_par, node, node_coordinates, i, tot_count/20))
     return cells_dict
 
 def translateLength(node):
-    print(node)
-    print(node_length[(node_length['u'] == node[0]) & (node_length['v'] == node[1])]["length"])
+    # print(node)
+    # print(node_length[(node_length['u'] == node[0]) & (node_length['v'] == node[1])]["length"])
     length = list(node_length[(node_length['u'] == node[0]) & (node_length['v'] == node[1])]["length"])[0]
     global CELL_EDGE_LENGTH
     translatedLength = (length // CELL_EDGE_LENGTH) * CELL_EDGE_LENGTH
@@ -94,20 +94,28 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     nor_lat1, nor_lon1 = getNormalizedCoordinates(lat_min, long_min, lat1, lon1)
     nor_lat2, nor_lon2 = getNormalizedCoordinates(lat_min, long_min, lat2, lon2)
     distance = getDistance(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
+    # print("Total count", tot_count, "new count", distance/1.5, "distance", distance)
+    
+
+    MULTIPLI = 0.001
+    nor_lat1 = nor_lat1* MULTIPLI #  (length/distance)
+    nor_lon1 = nor_lon1* MULTIPLI #  (length/distance)
+    nor_lat2 = nor_lat2* MULTIPLI #  (length/distance)
+    nor_lon2 = nor_lon2* MULTIPLI #  (length/distance)
+    distance = getDistance(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     if distance == 0:
-        distance = 0.0000000001
-    nor_lat1 = nor_lat1*(length/distance)
-    nor_lon1 = nor_lon1*(length/distance)
-    nor_lat2 = nor_lat2*(length/distance)
-    nor_lon2 = nor_lon2*(length/distance)
+        return
+    print("Total count", tot_count, "new count", distance/1.5, "distance", distance, "reduction" , tot_count/(distance/1.5))
+    # print("ratio = ", (length/distance))
+    print(str(nor_lat1) + ' ' + str(nor_lon1) + ' ' + str(nor_lat2) + ' ' + str(nor_lon2))
     slope = getSlope(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     dx1, dy1 = getDivisionPoint((serial_num//2), nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
     dx2, dy2 = getDivisionPoint((serial_num//2) + 1, nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
     px1, py1 = getPerprndicularCoordinates(dx1, dy1, slope, serial_num)
     px2, py2 = getPerprndicularCoordinates(dx2, dy2, slope, serial_num)
-    print(str(int(nor_lat1)) + ' ' + str(int(nor_lon1)) + ' ' + str(int(nor_lat2)) + ' ' + str(int(nor_lon2)))
+    # print(str(int(nor_lat1)) + ' ' + str(int(nor_lon1)) + ' ' + str(int(nor_lat2)) + ' ' + str(int(nor_lon2)))
     cord = '(' + str(dx1) + '|' + str(dy1) +')' + ' (' + str(px1) + '|' + str(py1) +')' + ' (' + str(px2) + '|' + str(py2) +')' + ' (' + str(dx2) + '|' + str(dy2) +')'
-    print(cord)
+    # print(cord)
     return cord
 
 def getNormalizedCoordinates(lat_min, long_min, lat, lon):
@@ -145,11 +153,11 @@ def getNormalizeParameter(lat_List, lon_List):
     return lat_min, long_min, lat_max, long_max
 
 def getPerprndicularCoordinates(x1, y1, slope, serial_num):
-    a = slope + 1
-    b = (slope + 1)*y1*(-2)
-    c = ((slope + 1)*(y1**2)) - (slope*(CELL_EDGE_LENGTH**2))
-    print("a , b , c = ", a, b, c)
-    print(x1, y1, slope, serial_num)
+    a = slope**2 + 1
+    b = (slope**2 + 1)*y1*(-2)
+    c = ((slope**2 + 1)*(y1**2)) - ((slope**2)*(CELL_EDGE_LENGTH**2))
+    # print("a , b , c = ", a, b, c)
+    # print(x1, y1, slope, serial_num)
     if serial_num%2 == 0:
         y_sol = ((-1)*b + sqrt(b**2 - 4*a*c))/(2*a)
         x_sol = ((y_sol - y1)/slope) + x1
@@ -159,10 +167,10 @@ def getPerprndicularCoordinates(x1, y1, slope, serial_num):
     return x_sol, y_sol
 
 def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
-    print("part, x1, y1, x2, y2, tot_count = ", part, x1, y1, x2, y2, tot_count)
+    # print("part, x1, y1, x2, y2, tot_count = ", part, x1, y1, x2, y2, tot_count)
     dx = ((part*x2) + ((tot_count - part)*x1))/tot_count
     dy = ((part*y2) + ((tot_count - part)*y1))/tot_count
-    print("dx, dy = ", dx, dy)
+    # print("dx, dy = ", dx, dy)
     return dx, dy
 
 
