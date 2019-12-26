@@ -1,0 +1,2 @@
+cellName,origCellName,destCellName,length,streamOrig,streamDest,boolean bi-directional
+C185161518218241369913,C185161518218241369911,C185161518218241369912,1.0607,W,S,true

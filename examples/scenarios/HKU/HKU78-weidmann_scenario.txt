@@ -1,11 +1,11 @@
 #configuration file (do not change order of parameters)
 input directory: examples/
 output directory: examples/output/HKU-weidmann/78/
-parameter file name: parameters/weidmannParamHKU.txt
+parameter file name: parameters/sbfdParamBER.txt
 link configuration file name: networks/HKU_links.txt
 cell configuration file name: networks/HKU_cells.txt
 route configuration file name: networks/HKU_routes.txt
-fundamental diagram: Weidmann
+fundamental diagram: SbFD
 CFL factor: 1.0
 
 # Output
@@ -24,6 +24,9 @@ demand file name: demand/HKU-78_180_60_0-60.txt
 write aggregated table: true
 
 # Calibration
-parameter search range file: parameters/weidmannParamSearchSpace.txt
+parameter search range file: parameters/sbfdParamSearchSpace.txt
 calibration mode: travel time distribution
 aggregation period (sec): 6
+
+# Blockage
+blockage configuration file name: networks/blockages.txt

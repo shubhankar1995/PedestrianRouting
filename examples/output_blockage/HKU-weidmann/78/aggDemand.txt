@@ -1,0 +1,3 @@
+#aggregated table: routeName, depTimeInt, numPeople, travelTimeObs, travelTimeSim
+#Log-likelihood = -173.4935705521658
+RT1, 1, 36.0, 11.267802616284452

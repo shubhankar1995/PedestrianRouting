@@ -1,0 +1,3 @@
+# groupID, routeName, groupSize, depTime, weightedTravelTime, rel_loss 
+0, RT1, 5.0, 0, 9.67790700391799, 0.14859571533574964
+1, RT2, 5.0, 0, 11.500646297922662, 0.06580332268850153
