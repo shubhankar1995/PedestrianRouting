@@ -94,10 +94,10 @@ public class Group {
     }
 
     // Return the squared error between meanTTObserved and meanTTSimulated times numPeople
-//  public double getWeightedSquaredError()
-//  {
-//      return numPeople*Math.pow(meanTTObserved-meanTTSimulated, 2);
-//  }
+//	public double getWeightedSquaredError()
+//	{
+//		return numPeople*Math.pow(meanTTObserved-meanTTSimulated, 2);
+//	}
     // Getter and Setter functions
     public String getRouteName() {
         return this.routeName;
@@ -117,6 +117,10 @@ public class Group {
 
     public double getStdDevTTSimulated() {
         return this.stdDevTTSimulated;
+    }
+    
+    public void setNumPeople(double numPeople){
+        this.numPeople = numPeople;
     }
 
     public void computeTravelTimeStats(Parameter param) {
@@ -176,10 +180,6 @@ public class Group {
     public double getRelLoss() {
         return this.relLoss;
     }
-    
-    public void setNumPeople(double numPeople) {
-        this.numPeople = numPeople;
-    }
 
     public ArrayList<Group> performStochasticRoute(Group group, Hashtable<String, Route> routeList) {  //** new
 
@@ -203,11 +203,16 @@ public class Group {
             probList.add(util / totUtil);
         }
 
+        System.out.println(probList.toString());
+         System.out.println(routeList.get("RT1").getRouteCricVelocity());
+         System.out.println(routeList.get("RT2").getRouteCricVelocity());
+        
+        
         for (int i = 0; i < allRouteOptions.size(); i++) {
             if (allRouteOptions.get(i).equals(origRouteName)) {
-                groupList.add(0, new Group(allRouteOptions.get(i), group.getDepTime(),Math.floor( probList.get(i) * totNumPeople), routeOptions));
+                groupList.add(0, new Group(allRouteOptions.get(i), group.getDepTime(), probList.get(i) * totNumPeople, routeOptions));
             } else {
-                groupList.add(new Group(allRouteOptions.get(i), group.getDepTime(), Math.floor(probList.get(i) * totNumPeople), routeOptions));
+                groupList.add(new Group(allRouteOptions.get(i), group.getDepTime(), probList.get(i) * totNumPeople, routeOptions));
             }
         }
 

@@ -17,18 +17,34 @@ public class Pedestrian {
 	private final double depTime; //observed departure time
 	
 	private final double travelTimeObs; //observed travel time
-
+        
+        private final String routeName2; // ** new
+        
+        private final String routeName3; // ** new
+	
 	// constructor
-	public Pedestrian(String rName, double depT, double travT) {
+	public Pedestrian(String rName, double depT, double travT, String rName2, String rName3) { // ** modified the function defination
+		routeName = rName;
 		
-		this.routeName = rName;
-		this.depTime = depT;
-		this.travelTimeObs = travT;
-
+		depTime = depT;
+		
+		travelTimeObs = travT;
+                
+                routeName2 = rName2; // ** new
+                
+                routeName3 = rName3; // ** new
 	}
 
 	public String getRouteName() {
 		return routeName;
+	}
+        
+        public String getRouteName2() { // ** new
+		return routeName2;
+	}
+        
+        public String getRouteName3() { // ** new
+		return routeName3;
 	}
 
 	public double getDepTime() {
@@ -50,9 +66,9 @@ public class Pedestrian {
 	//get mean travel time sim
 	public double getMeanTravelTimeSim(Hashtable<Integer, Group> groupList,
 			Parameter param) {
-
+		
 		Group correspGroup = getCorrespondingGroup(groupList, param);
-
+		
 		return correspGroup.getMeanTTSimulated();
 	}
 	

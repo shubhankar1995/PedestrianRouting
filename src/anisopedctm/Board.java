@@ -179,13 +179,14 @@ public class Board {
 		for(Blockage blockage: this.blockageList.values()) {
 			if(blockage.getStartTime() == timeStep ) {
 				cell = this.cellList.get(blockage.getCell());
-				cell.areaSize = cell.areaSize * (100 - blockage.getBlockagePercent())/100;
+				cell.funDiag.cellArea = cell.funDiag.cellArea * (100 - blockage.getBlockagePercent())/100;
 			} else if (blockage.getEndTime() == timeStep) {
 				cell = this.cellList.get(blockage.getCell());
-				cell.areaSize = 100 * cell.areaSize / (100 - blockage.getBlockagePercent());
+				cell.funDiag.cellArea = 100 * cell.funDiag.cellArea / (100 - blockage.getBlockagePercent());
 			}	
 		}
 		
+                System.out.println("Time : " + timeStep + " area : " + this.cellList.get("C18").areaSize);
 	}
 	
 	public void iterate(int timeStep) {
@@ -351,7 +352,8 @@ public class Board {
 					numPeople = curGroup.getNumPeople();
 					sourceLinkID = routeList.get(curGroup.getRouteName()).getSourceLinkID();	//sourceLinkID as per route of the subgroup
 					linkList.get(sourceLinkID).addFrag(groupID, numPeople);
-					
+					System.out.println("Route : " + curGroup.getRouteName() + " numPeople : " + numPeople);
+                                        
 					int size = 0;
 					for (Group subGroup: subGroupListOfCurGroup) {
 						//insert subgroup at the end of the main groupList
@@ -361,6 +363,7 @@ public class Board {
 						numPeople = subGroup.getNumPeople();
 						sourceLinkID = routeList.get(subGroup.getRouteName()).getSourceLinkID();	//sourceLinkID as per route of the subgroup
 						linkList.get(sourceLinkID).addFrag(size, numPeople);	//add group to source link
+                                                System.out.println("Route : " + subGroup.getRouteName() + " numPeople : " + numPeople);
 					}
 					
 					

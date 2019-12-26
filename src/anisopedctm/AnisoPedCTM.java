@@ -26,7 +26,13 @@ public class AnisoPedCTM {
 		ArrayList<String> expList = new ArrayList<String>();
 		
 		expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario.txt");
-		/*expList.add("examples/scenarios/HKU/HKU78-sbfd_scenario.txt");
+//		expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new.txt");
+//                expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new_150.txt");
+//                expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new_200.txt");
+//                expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new_350.txt");
+//                expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new_500.txt");
+//                expList.add("C:\\Users\\SHUBHANKAR\\Documents\\NetBeansProjects\\AnisoPedCTM\\examples\\scenarios\\HKU\\HKU78-weidmann_scenario_new_1000.txt");
+                /*expList.add("examples/scenarios/HKU/HKU78-sbfd_scenario.txt");
 		expList.add("examples/scenarios/HKU/HKU78-weidmann_scenario.txt");
 		expList.add("examples/scenarios/HKU/HKU79-drake_scenario.txt");
 		expList.add("examples/scenarios/HKU/HKU79-sbfd_scenario.txt");

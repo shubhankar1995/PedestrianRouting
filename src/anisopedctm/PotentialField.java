@@ -77,7 +77,12 @@ public class PotentialField {
 				candNode = nodeList.get(candNodeID);
 				candNodePot = candNode.getPotential(routeName);
 				blockagePercent = getNodeBlockagePercent(candNode, linkList, blockageList, timeStep);
-				candNodePot = candNodePot * (100 + blockagePercent)/100;
+                                
+                                if (blockagePercent == 0.0 ){
+                                    blockagePercent = 1.0;
+                                }
+                                
+				candNodePot = candNodePot;// * (100 + blockagePercent)/100;
 				
 				//System.out.println("candNodeID: " + candNodeID);
 				//System.out.println("candNodePot: " + candNodePot);
@@ -124,10 +129,16 @@ public class PotentialField {
 					//get link travel time and compute candidate potential
 					linkTravelTime = linkList.get(outLinkID).getRelTravTime();
 					neighborCandPot = nextNodePot + linkTravelTime;
-					neighborCandPot = neighborCandPot * (100 + blockagePercent)/100 ;
+                                        
+                                        if (blockagePercent == 0.0 ){
+                                            blockagePercent = 1.0;
+                                        }
+                                        
+					neighborCandPot = neighborCandPot;// * blockagePercent; //(100 + blockagePercent)/100 ;
 					
 					//if alternative potential is lower than current potential, update
 					if (neighborCandPot < neighborCurPot) {
+                                            
 						nodeList.get(neighborNodeID).setPotential(routeName, neighborCandPot);
 					}
 				}

@@ -127,7 +127,7 @@ public class Link {
 	}
 
 	public Double getRelTravTime() {
-            System.out.println("getRelTravTime: " + this.relLength/this.velNd + " this.relLength :" + this.relLength +" this.velNd :" + this.velNd  + " this.critVelNd :" + this.critVelNd);
+//            System.out.println("getRelTravTime: " + this.relLength/this.velNd + " this.relLength :" + this.relLength +" this.velNd :" + this.velNd  + " this.critVelNd :" + this.critVelNd);
 		return this.relLength/this.velNd;
 	}
 
@@ -144,7 +144,7 @@ public class Link {
 	}
 
 	public void setCritVelNd(double d) {
-                System.out.println("setCritVelNd: " +d);
+//                System.out.println("setCritVelNd: " +d);
 		this.critVelNd = d;
 	}
 
@@ -435,20 +435,20 @@ public class Link {
 			
 			availablePercent = 1;
 			
-			String cell = linkList.get(targLinkID).destCellName;
+			String cell = linkList.get(targLinkID).cellName;
 			
-			if (null != blockList.get(cell)) {
-				Blockage blockage = blockList.get(cell);
-				if(timeStep >= blockage.getStartTime() && timeStep <= blockage.getEndTime()) {
-					availablePercent = (100 - blockList.get(cell).getBlockagePercent())/100;
-				}
-			}
+//			if (null != blockList.get(cell)) {
+//				Blockage blockage = blockList.get(cell);
+//				if(timeStep >= blockage.getStartTime() && timeStep <= blockage.getEndTime()) {
+//					availablePercent = (100 - blockList.get(cell).getBlockagePercent())/100;
+//				}
+//			}
 			
 			//if out link is part of current route
 			if (Double.isNaN(routeSplitFrac) == false)
 			{
 				//compute sending capacity
-				curSendCap = routeSplitFrac*fragFlow * availablePercent;
+				curSendCap = routeSplitFrac*fragFlow ;//* availablePercent;
 
 				//set sending capacity
 				frag.setSendCap(targLinkID, curSendCap);

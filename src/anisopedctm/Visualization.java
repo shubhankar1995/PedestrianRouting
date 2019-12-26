@@ -655,7 +655,7 @@ public class Visualization {
 				else if(type == "SPEED_vcrit")
 				{
 					tmpValue = cellList.get(curCell).getStreamVel(adjCells.get(curAdjCell),linkList)*param.getFreeSpeed()/critValues.get("critVel");
-                                        System.out.println("Visual tmpValue: " + tmpValue);
+//                                        System.out.println("Visual tmpValue: " + tmpValue);
                                 }
 
 

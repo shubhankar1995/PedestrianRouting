@@ -635,7 +635,7 @@ public class Input {
 					throw new IllegalArgumentException("For cell" + cellName + "startTime cant be same as of after endTime");
 				}
 				
-				if(blockagePercent >= 100.00) {
+				if(blockagePercent > 100.00) {
 					throw new IllegalArgumentException("Blockage Percentage for cell" + cellName + "cant be ≥ 100");
 				}
 				
@@ -1048,7 +1048,7 @@ public class Input {
                         
 			double depTime, travelTime; //observed departure time and travel time
 			
-//			Pedestrian curPed;
+			Pedestrian curPed;
 
 			// First, we store all the information in arrays
 			while (!fileLines[lineNr].equals(EOF)) {
@@ -1065,13 +1065,13 @@ public class Input {
 				
 				travelTime = Double.parseDouble(lineElements[2]);
                                 
-//                                routeName2 = lineElements[3];   // ** new
-//                                routeName3 = lineElements[4];   // ** new
+                                routeName2 = lineElements[3];   // ** new
+                                routeName3 = lineElements[4];   // ** new
 				
 				//generate pedestrian
-//				curPed = new Pedestrian(routeName, depTime, travelTime, "", "");  // ** modified
+				curPed = new Pedestrian(routeName, depTime, travelTime, routeName2, routeName3);  // ** modified
 				
-//				pedList.put(lineNr-1, curPed);
+				pedList.put(lineNr-1, curPed);
 
 				lineNr++;
 
