@@ -18,7 +18,7 @@ CELL_EDGE_LENGTH = 1 #1.5
 NUM_CELLS_PER_WIDTH = 2
 NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
-DISTANCE_RANGE = 500
+DISTANCE_RANGE = 150
 # START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
 START_ADDRESS = 'Alberta St, Sydney'
 
@@ -48,7 +48,7 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
     lat_min_par, long_min_par, lat_max_par, long_max_par = getNormalizeParameter(lat_list, lon_list)
     for node in node_link_list:
         tot_count = int(getCellCount(node))
-        for i in range(round(tot_count/20)):    #for 150 - 4 and 0.005
+        for i in range(round(tot_count/20) + 1):    #for 150 - 4 and 0.005
             cell_Name = getCellName(str(node[0]) + str(node[1]) ,i)
             cells_dict['cellName'].append(cell_Name)
             cells_dict['zone'].append(getZoneName(str(node[0]) + str(node[1]) ,ceil(i//NUM_CELLS_PER_ZONE)))
