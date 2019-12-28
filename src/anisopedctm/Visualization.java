@@ -371,7 +371,7 @@ public class Visualization {
 			Polygon poly = new Polygon();
 			
 			for (int i = 0; i < no_of_points; i++) {
-				poly.addPoint((int) points[2*i] * 100, (int) points[2*i + 1] * 100);
+				poly.addPoint( (int) (points[2*i] * 100), (int) (points[2*i + 1] * 100));
 			}
 			
 			// We set the color for the lines
@@ -381,8 +381,8 @@ public class Visualization {
 //			if (curCell.equals("C183520349318594013630]")) {
 //				g2D.fillPolygon(poly);
 //			}
-			g2D.drawRect(cellXPosition.get(curCell), this.imageHeight - (cellYPosition.get(curCell) + cellHeight.get(curCell)), cellWidth.get(curCell), cellHeight.get(curCell));
-			
+//			g2D.drawRect(cellXPosition.get(curCell), this.imageHeight - (cellYPosition.get(curCell) + cellHeight.get(curCell)), cellWidth.get(curCell), cellHeight.get(curCell));
+			g2D.drawPolygon(poly);
 		
 		}
 
