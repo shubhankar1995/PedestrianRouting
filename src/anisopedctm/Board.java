@@ -186,7 +186,7 @@ public class Board {
 			}	
 		}
 		
-                System.out.println("Time : " + timeStep + " area : " + this.cellList.get("C18").areaSize);
+//                System.out.println("Time : " + timeStep + " area : " + this.cellList.get("C18").areaSize);
 	}
 	
 	public void iterate(int timeStep) {
@@ -328,12 +328,22 @@ public class Board {
 							while(adjcellKeys.hasMoreElements()) {
 								curAdjCell = adjcellKeys.nextElement();
 								double critVel;
+                                                                
+                                                                double availablePercent = 1.0;
+                                                                
+                                                                for(Blockage blockage: this.blockageList.values()) {
+                                                                    if(blockage.getStartTime() <= timeStep && blockage.getEndTime() >= timeStep) {
+                                                                        if (curAdjCell.equals(blockage.getCell())){
+                                                                            availablePercent = 1 - (blockage.getBlockagePercent()/100);
+                                                                        }
+                                                                    } 	
+                                                                }
 
 								critVel = cell.getStreamVel(adjCells.get(curAdjCell),linkList) * param.getFreeSpeed()/ visualization.critValues.get("critVel");
 								if (critVel > 0.0) {
-									critVelListPerRoute.add(critVel);
+									critVelListPerRoute.add(critVel *availablePercent);
 								} else {
-									critVelListPerRoute.add(param.getFreeSpeed());
+									critVelListPerRoute.add(param.getFreeSpeed()*availablePercent );
 								}
 							}
 						}

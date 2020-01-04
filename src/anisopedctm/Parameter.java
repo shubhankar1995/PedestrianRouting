@@ -84,7 +84,7 @@ public class Parameter {
 	// Write the aggregated table at the end of the simulation
 	public final boolean writeAggTable;
 
-        public static final double alpha = -0.5;  // ** new
+        public static final double alpha = 0.5;  // ** new
         public static final double beta = 0.7;     // ** new
         
 	//file paths input
