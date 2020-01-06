@@ -30,7 +30,8 @@ TIME_INCREMENT = 0.3
 TRAVEL_TIME = 10.6
 
 odMatrixFileName = 'D:\\UNSW\\rCITI\\OSMNX Python\\ODMatrix.txt'
-FILE_CREATION_PATH = "D:\\UNSW\\rCITI\\OSMNX Python"
+# FILE_CREATION_PATH = "D:\\UNSW\\rCITI\\OSMNX Python"       
+FILE_CREATION_PATH = "D:\\Documents\\GitHub\\PedestrianRouting\\DataGenerationPython"
 FILE_FORMAT = ".txt"
 
 STRAIGHT_LENGTH = 1.5
@@ -105,7 +106,7 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     distance = getDistance(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     if distance == 0:
         return
-    print("Total count", tot_count, "new count", distance/1.5, "distance", distance, "reduction" , tot_count/(distance/1.5))
+    # print("Total count", tot_count, "new count", distance/1.5, "distance", distance, "reduction" , tot_count/(distance/1.5))
     # print("ratio = ", (length/distance))
     print(str(nor_lat1) + ' ' + str(nor_lon1) + ' ' + str(nor_lat2) + ' ' + str(nor_lon2))
     slope = getSlope(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
@@ -294,7 +295,7 @@ def createLinksData(node_list):
 
 def createRoadIntersections(node_list):
     temp_list = []
-    for i in range(len(node_list) -1):
+    for i in range(len(node_list) -2):
         tmp1 = str(node_list[i]) + str(node_list[i+1])
         tmp2 = str(node_list[i+1]) + str(node_list[i])
         tmp_1 = tmp1
@@ -359,52 +360,53 @@ def createRoadIntersections(node_list):
         links_dict['boolean bi-directional'].append(BI_DIRECTION)
 
 def createPathEnds(node_list):
-    tmp1 = str(node_list[i]) + str(node_list[i+1])
-    tmp2 = str(node_list[i+1]) + str(node_list[i])
-    tmp_1 = tmp1
-    count_1 = cell_data[cell_data['cellName'].str[1:len(tmp1)+1]==tmp1].zone.count()
-    if count_1 == 0:
-        count_1 = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
-        tmp_1 = tmp2
-    tmp3 = str(node_list[len(node_list)-1]) + str(node_list[len(node_list)-2])
-    tmp4 = str(node_list[len(node_list)-2]) + str(node_list[len(node_list)-1])
-    tmp_2 = tmp3
-    count_2 = cell_data[cell_data['cellName'].str[1:len(tmp3)+1]==tmp3].zone.count()
-    if count_2 == 0:
-        count_2 = cell_data[cell_data['cellName'].str[1:len(tmp4)+1]==tmp4].zone.count()
-        tmp_2 = tmp4
-    #end1
-    links_dict['cellName'].append('C'+tmp_2+str(count_1-1))
-    links_dict['origCellName'].append('C'+tmp_2+str(count_1-3))
-    links_dict['destCellName'].append('none')
-    links_dict['length'].append(TURN_LENGTH)
-    links_dict['streamOrig'].append('W')
-    links_dict['streamDest'].append('E')
-    links_dict['boolean bi-directional'].append(BI_DIRECTION)
-    #end2
-    links_dict['cellName'].append('C'+tmp_2+str(count_1-2))
-    links_dict['origCellName'].append('C'+tmp_2+str(count_1-4))
-    links_dict['destCellName'].append('none')
-    links_dict['length'].append(TURN_LENGTH)
-    links_dict['streamOrig'].append('W')
-    links_dict['streamDest'].append('E')
-    links_dict['boolean bi-directional'].append(BI_DIRECTION)
-    #start1
-    links_dict['cellName'].append('C'+tmp_1+str(1))
-    links_dict['origCellName'].append('none')
-    links_dict['destCellName'].append('C'+tmp_1+str(3))
-    links_dict['length'].append(TURN_LENGTH)
-    links_dict['streamOrig'].append('W')
-    links_dict['streamDest'].append('E')
-    links_dict['boolean bi-directional'].append(BI_DIRECTION)
-    #start2
-    links_dict['cellName'].append('C'+tmp_1+str(0))
-    links_dict['origCellName'].append('none')
-    links_dict['destCellName'].append('C'+tmp_1+str(2))
-    links_dict['length'].append(TURN_LENGTH)
-    links_dict['streamOrig'].append('W')
-    links_dict['streamDest'].append('E')
-    links_dict['boolean bi-directional'].append(BI_DIRECTION)
+    for i in range(len(node_list) -1):
+        tmp1 = str(node_list[i]) + str(node_list[i+1])
+        tmp2 = str(node_list[i+1]) + str(node_list[i])
+        tmp_1 = tmp1
+        count_1 = cell_data[cell_data['cellName'].str[1:len(tmp1)+1]==tmp1].zone.count()
+        if count_1 == 0:
+            count_1 = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
+            tmp_1 = tmp2
+        tmp3 = str(node_list[len(node_list)-1]) + str(node_list[len(node_list)-2])
+        tmp4 = str(node_list[len(node_list)-2]) + str(node_list[len(node_list)-1])
+        tmp_2 = tmp3
+        count_2 = cell_data[cell_data['cellName'].str[1:len(tmp3)+1]==tmp3].zone.count()
+        if count_2 == 0:
+            count_2 = cell_data[cell_data['cellName'].str[1:len(tmp4)+1]==tmp4].zone.count()
+            tmp_2 = tmp4
+        #end1
+        links_dict['cellName'].append('C'+tmp_2+str(count_1-1))
+        links_dict['origCellName'].append('C'+tmp_2+str(count_1-3))
+        links_dict['destCellName'].append('none')
+        links_dict['length'].append(TURN_LENGTH)
+        links_dict['streamOrig'].append('W')
+        links_dict['streamDest'].append('E')
+        links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        #end2
+        links_dict['cellName'].append('C'+tmp_2+str(count_1-2))
+        links_dict['origCellName'].append('C'+tmp_2+str(count_1-4))
+        links_dict['destCellName'].append('none')
+        links_dict['length'].append(TURN_LENGTH)
+        links_dict['streamOrig'].append('W')
+        links_dict['streamDest'].append('E')
+        links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        #start1
+        links_dict['cellName'].append('C'+tmp_1+str(1))
+        links_dict['origCellName'].append('none')
+        links_dict['destCellName'].append('C'+tmp_1+str(3))
+        links_dict['length'].append(TURN_LENGTH)
+        links_dict['streamOrig'].append('W')
+        links_dict['streamDest'].append('E')
+        links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        #start2
+        links_dict['cellName'].append('C'+tmp_1+str(0))
+        links_dict['origCellName'].append('none')
+        links_dict['destCellName'].append('C'+tmp_1+str(2))
+        links_dict['length'].append(TURN_LENGTH)
+        links_dict['streamOrig'].append('W')
+        links_dict['streamDest'].append('E')
+        links_dict['boolean bi-directional'].append(BI_DIRECTION)
 
 # -------------------------- Code for finding the routes -------------------------------------------------#
 
@@ -414,6 +416,7 @@ def getZoneSequence(node_list):
     # print('route list =', node_list)
     temp_list = []
     for i in range(len(node_list) -1):
+        flagRev = 0
         tmp1 = str(node_list[i]) + str(node_list[i+1])
         tmp2 = str(node_list[i+1]) + str(node_list[i])
         tmp = tmp1
@@ -421,8 +424,13 @@ def getZoneSequence(node_list):
         if count == 0:
             count = ceil(cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count() / 4)
             tmp = tmp2
-        for j in range(count):
-            temp_list.append('Z'+tmp+str(j))
+            flagRev = 1
+        if flagRev == 0:
+            for j in range(count):
+                temp_list.append('Z'+tmp+str(j))
+        else:
+            for j in range(count-1,-1,-1):
+                temp_list.append('Z'+tmp+str(j))
     return '-'.join(str(val) for val in temp_list)
 
 def getRouteData(orig_cord, dest_cord, serial_num):
@@ -437,8 +445,11 @@ def getRouteData(orig_cord, dest_cord, serial_num):
             routes_dict['zoneSequence'].append(getZoneSequence(node_list))
             routes_dict['routeName'].append(ROUTE_CONV_NAME+str(serial_num)+str(i)) #Make changes to store muliple origin-destination pair
             routes_dict['distance'].append(kShortestPathsObject.cost)
+            print("generating links")
             createLinksData(node_list)
+            print("generating road intersections")
             createRoadIntersections(node_list)
+            print("generating path ends")
             createPathEnds(node_list)
         except:
             pass
