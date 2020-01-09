@@ -308,8 +308,8 @@ public class Visualization {
 		int yPos = (int)Math.round(cellYPosition.get(cellname) + (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0);
 
 		// Before writing the value of the arrow, we draw a white rectangle. It helps to read more easily the values
-		g2D.setColor(Color.WHITE);
-		g2D.fillRect(xPos - 2,  this.imageHeight - yPos - fm.getHeight() + 5, totalWidth,fm.getHeight());
+//		g2D.setColor(Color.WHITE);
+//		g2D.fillRect(xPos - 2,  this.imageHeight - yPos - fm.getHeight() + 5, totalWidth,fm.getHeight());
 
 		// Now, we write the value
 		g2D.setColor(Color.BLACK);
