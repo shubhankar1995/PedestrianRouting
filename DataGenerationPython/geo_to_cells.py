@@ -12,7 +12,6 @@ import networkx as nx
 from YenKShortestPaths import YenKShortestPaths
 
 #constant values
-
 SURFACE_AREA_CELL = 2.25
 CELL_EDGE_LENGTH = 1 #1.5
 NUM_CELLS_PER_WIDTH = 2
@@ -114,9 +113,8 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     dx2, dy2 = getDivisionPoint((serial_num//2) + 1, nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
     px1, py1 = getPerprndicularCoordinates(dx1, dy1, slope, serial_num)
     px2, py2 = getPerprndicularCoordinates(dx2, dy2, slope, serial_num)
-    # print(str(int(nor_lat1)) + ' ' + str(int(nor_lon1)) + ' ' + str(int(nor_lat2)) + ' ' + str(int(nor_lon2)))
-    cord = '(' + str(dx1) + '|' + str(dy1) +')' + ' (' + str(px1) + '|' + str(py1) +')' + ' (' + str(px2) + '|' + str(py2) +')' + ' (' + str(dx2) + '|' + str(dy2) +')'
-    # print(cord)
+    #padding of 2 units to avoid negative coordinates
+    cord = '(' + str(dx1+2) + '|' + str(dy1+2) +')' + ' (' + str(px1+2) + '|' + str(py1+2) +')' + ' (' + str(px2+2) + '|' + str(py2+2) +')' + ' (' + str(dx2+2) + '|' + str(dy2+2) +')'
     return cord
 
 def getNormalizedCoordinates(lat_min, long_min, lat, lon):
@@ -471,9 +469,9 @@ def getRouteData(orig_cord, dest_cord, serial_num):
             print("generating links")
             createLinksData(node_list)
             print("generating road intersections")
-            createRoadIntersections(node_list)
+            # createRoadIntersections(node_list)
             print("generating path ends")
-            createPathEnds(node_list)
+            # createPathEnds(node_list)
         except:
             pass
     return routes_dict
