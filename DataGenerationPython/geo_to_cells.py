@@ -19,8 +19,8 @@ NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
 DISTANCE_RANGE = 350
 # START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
-START_ADDRESS = 'Alberta St, Sydney'
-
+# START_ADDRESS = 'Alberta St, Sydney'
+START_POINT = (-33.90701, 151.2227424)
 
 MAX_ROUTES = 1
 ROUTE_CONV_NAME = 'RT'
@@ -173,7 +173,8 @@ def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
     return dx, dy
 
 
-G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
+# G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
+G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
 graph = deepcopy(G4)
 
 data = ox.save_load.graph_to_gdfs(G4, nodes=True, edges=True, node_geometry=False, fill_edge_geometry=False)
