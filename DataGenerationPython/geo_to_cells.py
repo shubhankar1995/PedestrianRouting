@@ -19,10 +19,10 @@ NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
 DISTANCE_RANGE = 350
 # START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
-# START_ADDRESS = 'Alberta St, Sydney'
+START_ADDRESS = 'Alberta St, Sydney'
 START_POINT = (-33.90701, 151.2227424)
 
-MAX_ROUTES = 1
+MAX_ROUTES = 3
 ROUTE_CONV_NAME = 'RT'
 
 TIME_INCREMENT = 0.3
@@ -48,7 +48,13 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
     lat_min_par, long_min_par, lat_max_par, long_max_par = getNormalizeParameter(lat_list, lon_list)
     for node in node_link_list:
         tot_count = int(getCellCount(node))
-        for i in range(round(tot_count/20) + 1):    #for 150 - 4 and 0.005
+        display_tot_count = round(tot_count/20)
+        if display_tot_count%2 == 1:
+            display_tot_count = display_tot_count + 1
+        if display_tot_count == 0:
+            display_tot_count = 2
+        print("tot_count:",tot_count,"range:",display_tot_count)
+        for i in range(display_tot_count):    #for 150 - 4 and 0.005
             cell_Name = getCellName(str(node[0]) + str(node[1]) ,i)
             cells_dict['cellName'].append(cell_Name)
             cells_dict['zone'].append(getZoneName(str(node[0]) + str(node[1]) ,ceil(i//NUM_CELLS_PER_ZONE)))
@@ -107,7 +113,7 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
         return
     # print("Total count", tot_count, "new count", distance/1.5, "distance", distance, "reduction" , tot_count/(distance/1.5))
     # print("ratio = ", (length/distance))
-    print(str(nor_lat1) + ' ' + str(nor_lon1) + ' ' + str(nor_lat2) + ' ' + str(nor_lon2))
+    # print(str(nor_lat1) + ' ' + str(nor_lon1) + ' ' + str(nor_lat2) + ' ' + str(nor_lon2))
     slope = getSlope(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     dx1, dy1 = getDivisionPoint((serial_num//2), nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
     dx2, dy2 = getDivisionPoint((serial_num//2) + 1, nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
@@ -173,8 +179,8 @@ def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
     return dx, dy
 
 
-# G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
-G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
+G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
+# G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
 graph = deepcopy(G4)
 
 data = ox.save_load.graph_to_gdfs(G4, nodes=True, edges=True, node_geometry=False, fill_edge_geometry=False)
