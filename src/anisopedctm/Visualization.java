@@ -621,9 +621,13 @@ public class Visualization {
 			ddx = (int)Math.round(0.5*cellWidth.get(curCell));
 			ddy = (int)Math.round(0.5*cellHeight.get(curCell));
 
-			xCenter = cellXPosition.get(curCell) + ddx;
-			yCenter = cellYPosition.get(curCell) + ddy;
-
+//			xCenter = cellXPosition.get(curCell) + ddx;
+//			yCenter = cellYPosition.get(curCell) + ddy;
+			
+			int[] points = getIntersectionPoint(cellList.get(curCell).coordinates);
+			xCenter = points[0] + ddx/2;
+			yCenter = points[1] + ddy;
+			
 			adjCells = cellList.get(curCell).adjCellPos;
 
 			Enumeration<String> adjcellKeys = adjCells.keys();
@@ -776,7 +780,7 @@ public class Visualization {
 					if(param.displayNumbers == true)
 					{
 						// Write the value
-						writeArrowValue(g2D,curCell,directionValues.get(curDir),maxValue,corresps.get(curDir),dd);
+						writeArrowValue(g2D,curCell,directionValues.get(curDir),maxValue,corresps.get(curDir),dd, cellList);
 					}
 				}
 			}
@@ -874,7 +878,7 @@ public class Visualization {
 	}
 
 	// Write the value for an arrow
-	public void writeArrowValue(Graphics2D g2D, String cellname, double value, double maxValue, String arrowDirection, int arrow_head){
+	public void writeArrowValue(Graphics2D g2D, String cellname, double value, double maxValue, String arrowDirection, int arrow_head, Hashtable<String, Cell> cellList){
 
 		g2D.setFont(new Font(g2D.getFont().getFontName(), Font.PLAIN, 20));
 
@@ -892,7 +896,11 @@ public class Visualization {
 
 		int xPos = 0;
 		int yPos = 0;
-
+		
+		int[] points = getIntersectionPoint(cellList.get(cellname).coordinates);
+		xPos = points[0];
+		yPos = points[1];
+		
 		if(roundToSecondDecimal(value) >= tol)
 		{
 
@@ -904,8 +912,12 @@ public class Visualization {
 				{
 					xShift = (int)Math.round(2.5*xShift);
 				}
-				xPos = (int)Math.round(cellXPosition.get(cellname) + 0.5*cellWidth.get(cellname) + xShift);
-				yPos = (int)Math.round(cellYPosition.get(cellname) + 3.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0);
+//				xPos = (int)Math.round(cellXPosition.get(cellname) + 0.5*cellWidth.get(cellname) + xShift);
+//				yPos = (int)Math.round(cellYPosition.get(cellname) + 3.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0);
+				
+				xPos += (0.5*cellWidth.get(cellname) + xShift)/2;
+				yPos += 3.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0;
+				
 			}
 			// If the arrow points in the DOWN direction, we will place the text on the right
 			else if(arrowDirection.equals("DOWN"))
@@ -915,8 +927,11 @@ public class Visualization {
 				{
 					xShift = (int)Math.round(2.5*xShift);
 				}
-				xPos = (int)Math.round(cellXPosition.get(cellname) + 0.5*cellWidth.get(cellname) - xShift - totalWidth);
-				yPos = (int)Math.round(cellYPosition.get(cellname) + 1.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0);
+//				xPos = (int)Math.round(cellXPosition.get(cellname) + 0.5*cellWidth.get(cellname) - xShift - totalWidth);
+//				yPos = (int)Math.round(cellYPosition.get(cellname) + 1.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0);
+				
+				xPos += (0.5*cellWidth.get(cellname) - xShift - totalWidth)/2;
+				yPos += 1.0/4.0*cellHeight.get(cellname) - fm.getHeight()/2.0 + fm.getAscent()/4.0;
 			}
 			// If the arrow points in the RIGHT direction, we will place the text below the arrow
 			else if(arrowDirection.equals("RIGHT"))
@@ -928,8 +943,11 @@ public class Visualization {
 					yShift = (int)Math.round(2.5*yShift);
 					xShift = 0;
 				}
-				xPos = (int)Math.round(cellXPosition.get(cellname) + 3.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 - xShift);
-				yPos = (int)Math.round(cellYPosition.get(cellname) + (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 - yShift);
+//				xPos = (int)Math.round(cellXPosition.get(cellname) + 3.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 - xShift);
+//				yPos = (int)Math.round(cellYPosition.get(cellname) + (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 - yShift);
+				
+				xPos += (3.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 - xShift)/2;
+				yPos += (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 - yShift;
 			}
 			// If the arrow points in the LEFT direction, we will place the text above the arrow
 			else // arrowDirection.equals("LEFT")
@@ -941,8 +959,11 @@ public class Visualization {
 					yShift = (int)Math.round(2.5*yShift);
 					xShift = 0;
 				}
-				xPos = (int)Math.round(cellXPosition.get(cellname) + 1.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 + xShift);
-				yPos = (int)Math.round(cellYPosition.get(cellname) + (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 + yShift);
+//				xPos = (int)Math.round(cellXPosition.get(cellname) + 1.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 + xShift);
+//				yPos = (int)Math.round(cellYPosition.get(cellname) + (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 + yShift);
+				
+				xPos += (1.0/4.0*cellWidth.get(cellname) - totalWidth/2.0 + xShift)/2;
+				yPos += (cellHeight.get(cellname) - fm.getHeight())/2.0 + fm.getAscent()/4.0 + yShift;
 			}
 
 			// Before writing the value of the arrow, we draw a white rectangle. It helps to read more easily the values
