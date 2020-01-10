@@ -381,57 +381,91 @@ def createRoadIntersections(node_list):
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
 
 def createPathEnds(node_list):
-    for i in range(len(node_list) -1):
-        tmp1 = str(node_list[i]) + str(node_list[i+1])
-        tmp2 = str(node_list[i+1]) + str(node_list[i])
-        tmp_1 = tmp1
-        count_1 = cell_data[cell_data['cellName'].str[1:len(tmp1)+1]==tmp1].zone.count()
-        if count_1 == 0:
-            count_1 = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
-            tmp_1 = tmp2
-        tmp3 = str(node_list[len(node_list)-1]) + str(node_list[len(node_list)-2])
-        tmp4 = str(node_list[len(node_list)-2]) + str(node_list[len(node_list)-1])
-        tmp_2 = tmp3
-        count_2 = cell_data[cell_data['cellName'].str[1:len(tmp3)+1]==tmp3].zone.count()
-        if count_2 == 0:
-            count_2 = cell_data[cell_data['cellName'].str[1:len(tmp4)+1]==tmp4].zone.count()
-            tmp_2 = tmp4
-        #end1
-        if (isCellExists('C'+tmp_2+str(count_1-1)) and isCellExists('C'+tmp_2+str(count_1-3))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1-1))
-            links_dict['origCellName'].append('C'+tmp_2+str(count_1-3))
-            links_dict['destCellName'].append('none')
-            links_dict['length'].append(TURN_LENGTH)
-            links_dict['streamOrig'].append('W')
-            links_dict['streamDest'].append('E')
-            links_dict['boolean bi-directional'].append(BI_DIRECTION)
-
-        #end2
-        if (isCellExists('C'+tmp_2+str(count_1-2)) and isCellExists('C'+tmp_2+str(count_1-4))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1-2))
-            links_dict['origCellName'].append('C'+tmp_2+str(count_1-4))
-            links_dict['destCellName'].append('none')
-            links_dict['length'].append(TURN_LENGTH)
-            links_dict['streamOrig'].append('W')
-            links_dict['streamDest'].append('E')
-            links_dict['boolean bi-directional'].append(BI_DIRECTION)
-
-        #start1
-        if (isCellExists('C'+tmp_1+str(1)) and isCellExists('C'+tmp_1+str(3))):
-            links_dict['cellName'].append('C'+tmp_1+str(1))
+    #origin cells
+    tmp1 = str(node_list[0]) + str(node_list[1])
+    tmp2 = str(node_list[1]) + str(node_list[0])
+    isReverse = 0
+    tmp_1 = tmp1
+    count_1 = cell_data[cell_data['cellName'].str[1:len(tmp1)+1]==tmp1].zone.count()
+    if count_1 == 0:
+        count_1 = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
+        tmp_1 = tmp2
+        isReverse = 1
+    if isReverse == 0:
+        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
+            links_dict['cellName'].append('C'+tmp_2+str(0))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_1+str(3))
-            links_dict['length'].append(TURN_LENGTH)
+            links_dict['destCellName'].append('C'+tmp_2+str(2))
+            links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
-
-        #start2
-        if (isCellExists('C'+tmp_1+str(0)) and isCellExists('C'+tmp_1+str(2))):
-            links_dict['cellName'].append('C'+tmp_1+str(0))
+        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
+            links_dict['cellName'].append('C'+tmp_2+str(1))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_1+str(2))
-            links_dict['length'].append(TURN_LENGTH)
+            links_dict['destCellName'].append('C'+tmp_2+str(3))
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+    else:
+        if (isCellExists('C'+tmp_2+str(count_1 - 1)) and isCellExists('C'+tmp_2+str(count_1 - 3))):
+            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 1))
+            links_dict['origCellName'].append('none')
+            links_dict['destCellName'].append('C'+tmp_2+str(count_1 - 3))
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        if (isCellExists('C'+tmp_2+str(count_1 - 2)) and isCellExists('C'+tmp_2+str(count_1 - 4))):
+            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 2))
+            links_dict['origCellName'].append('none')
+            links_dict['destCellName'].append('C'+tmp_2+str(count_1 - 4))
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+    #cell destination
+    tmp1 = str(node_list[len(node_list)-2]) + str(node_list[len(node_list)-1])
+    tmp2 = str(node_list[len(node_list)-1]) + str(node_list[len(node_list)-2])
+    isReverse = 0
+    tmp_1 = tmp1
+    count_1 = cell_data[cell_data['cellName'].str[1:len(tmp1)+1]==tmp1].zone.count()
+    if count_1 == 0:
+        count_1 = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
+        tmp_1 = tmp2
+        isReverse = 1
+    if isReverse == 0:
+        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
+            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 1))
+            links_dict['origCellName'].append('C'+tmp_2+str(count_1 - 3))
+            links_dict['destCellName'].append('none')
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
+            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 2))
+            links_dict['origCellName'].append('C'+tmp_2+str(count_1 - 4))
+            links_dict['destCellName'].append('none')
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+    else:
+        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
+            links_dict['cellName'].append('C'+tmp_2+str(0))
+            links_dict['origCellName'].append('C'+tmp_2+str(2))
+            links_dict['destCellName'].append('none')
+            links_dict['length'].append('MIN')
+            links_dict['streamOrig'].append('W')
+            links_dict['streamDest'].append('E')
+            links_dict['boolean bi-directional'].append(BI_DIRECTION)
+        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
+            links_dict['cellName'].append('C'+tmp_2+str(1))
+            links_dict['origCellName'].append('C'+tmp_2+str(3))
+            links_dict['destCellName'].append('none')
+            links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
@@ -478,7 +512,8 @@ def getRouteData(orig_cord, dest_cord, serial_num):
             print("generating road intersections")
             # createRoadIntersections(node_list)
             print("generating path ends")
-            # createPathEnds(node_list)
+            createPathEnds(node_list)
+            print("all generated")
         except:
             pass
     return routes_dict
