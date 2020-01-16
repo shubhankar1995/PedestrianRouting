@@ -428,8 +428,8 @@ def createRoadIntersections(node_list):
                 links_dict['boolean bi-directional'].append(BI_DIRECTION)
             #case5
             if (isCellExists('C'+tmp_1+str(0)) and isCellExists('C'+tmp_1+str(1)) and isCellExists('C'+tmp_2+str(1))):
-                links_dict['cellName'].append('C'+tmp_1+str(0))
-                links_dict['origCellName'].append('C'+tmp_1+str(1))
+                links_dict['cellName'].append('C'+tmp_1+str(1))
+                links_dict['origCellName'].append('C'+tmp_1+str(0))
                 links_dict['destCellName'].append('C'+tmp_2+str(1))
                 links_dict['length'].append(TURN_LENGTH)
                 links_dict['streamOrig'].append('S')
