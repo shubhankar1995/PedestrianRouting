@@ -19,18 +19,19 @@ NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
 DISTANCE_RANGE = 350
 # START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
-START_ADDRESS = 'Alberta St, Sydney'
-START_POINT = (-33.90701, 151.2227424)
+# START_ADDRESS = 'Alberta St, Sydney'
+START_POINT = (-34.01746,151.06285)
 
-MAX_ROUTES = 3
+MAX_ROUTES = 1
 ROUTE_CONV_NAME = 'RT'
 
 TIME_INCREMENT = 0.3
 TRAVEL_TIME = 10.6
 
-odMatrixFileName = 'D:\\UNSW\\rCITI\\OSMNX Python\\ODMatrix.txt'
+
 # FILE_CREATION_PATH = "D:\\UNSW\\rCITI\\OSMNX Python"       
 FILE_CREATION_PATH = "D:\\Documents\\GitHub\\PedestrianRouting\\DataGenerationPython"
+odMatrixFileName = FILE_CREATION_PATH + '\\ODMatrix.txt'
 FILE_FORMAT = ".txt"
 
 STRAIGHT_LENGTH = 1.5
@@ -59,7 +60,7 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
             cells_dict['cellName'].append(cell_Name)
             cells_dict['zone'].append(getZoneName(str(node[0]) + str(node[1]) ,ceil(i//NUM_CELLS_PER_ZONE)))
             cells_dict['surfaceSize'].append(getSurfaceArea())
-            cells_dict['coordinate'].append(getCoordinates(lat_min_par, long_min_par, node, node_coordinates, i, tot_count/20))
+            cells_dict['coordinate'].append(getCoordinates(lat_min_par, long_min_par, node, node_coordinates, i, display_tot_count))
     return cells_dict
 
 def translateLength(node):
@@ -179,8 +180,8 @@ def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
     return dx, dy
 
 
-G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
-# G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
+# G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
+G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
 graph = deepcopy(G4)
 
 data = ox.save_load.graph_to_gdfs(G4, nodes=True, edges=True, node_geometry=False, fill_edge_geometry=False)
@@ -278,9 +279,9 @@ def createLinksData(node_list):
         #                     |
         # for curving up path x-x
         for j in range(1, count - 2, 2):                           # starting with 1 since the origin is not in -ve, for odd j
-            if (isCellExists('C'+tmp+str(j-1)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
+            if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
                 links_dict['cellName'].append('C'+tmp+str(j))
-                links_dict['origCellName'].append('C'+tmp+str(j-1))
+                links_dict['origCellName'].append('C'+tmp+str(j+2))
                 links_dict['destCellName'].append('C'+tmp+str(j+1))
                 links_dict['length'].append(TURN_LENGTH)
                 links_dict['streamOrig'].append('W')
@@ -290,10 +291,10 @@ def createLinksData(node_list):
         #                       |
         #                       x
         for j in range(0, count - 2, 2):                           # for even j
-            if (isCellExists('C'+tmp+str(j+3)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
+            if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j-1))):
                 links_dict['cellName'].append('C'+tmp+str(j))
-                links_dict['origCellName'].append('C'+tmp+str(j+1))
-                links_dict['destCellName'].append('C'+tmp+str(j+3))
+                links_dict['origCellName'].append('C'+tmp+str(j-1))
+                links_dict['destCellName'].append('C'+tmp+str(j+2))
                 links_dict['length'].append(TURN_LENGTH)
                 links_dict['streamOrig'].append('W')
                 links_dict['streamDest'].append('S')
@@ -557,35 +558,35 @@ def createPathEnds(node_list):
         tmp_1 = tmp2
         isReverse = 1
     if isReverse == 0:
-        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
-            links_dict['cellName'].append('C'+tmp_2+str(0))
+        if (isCellExists('C'+tmp_1+str(0)) and isCellExists('C'+tmp_1+str(2))):
+            links_dict['cellName'].append('C'+tmp_1+str(0))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_2+str(2))
+            links_dict['destCellName'].append('C'+tmp_1+str(2))
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
-        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
-            links_dict['cellName'].append('C'+tmp_2+str(1))
+        if (isCellExists('C'+tmp_1+str(1)) and isCellExists('C'+tmp_1+str(3))):
+            links_dict['cellName'].append('C'+tmp_1+str(1))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_2+str(3))
+            links_dict['destCellName'].append('C'+tmp_1+str(3))
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
     else:
-        if (isCellExists('C'+tmp_2+str(count_1 - 1)) and isCellExists('C'+tmp_2+str(count_1 - 3))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 1))
+        if (isCellExists('C'+tmp_1+str(count_1 - 1)) and isCellExists('C'+tmp_1+str(count_1 - 3))):
+            links_dict['cellName'].append('C'+tmp_1+str(count_1 - 1))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_2+str(count_1 - 3))
+            links_dict['destCellName'].append('C'+tmp_1+str(count_1 - 3))
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
-        if (isCellExists('C'+tmp_2+str(count_1 - 2)) and isCellExists('C'+tmp_2+str(count_1 - 4))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 2))
+        if (isCellExists('C'+tmp_1+str(count_1 - 2)) and isCellExists('C'+tmp_1+str(count_1 - 4))):
+            links_dict['cellName'].append('C'+tmp_1+str(count_1 - 2))
             links_dict['origCellName'].append('none')
-            links_dict['destCellName'].append('C'+tmp_2+str(count_1 - 4))
+            links_dict['destCellName'].append('C'+tmp_1+str(count_1 - 4))
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
@@ -601,34 +602,34 @@ def createPathEnds(node_list):
         tmp_1 = tmp2
         isReverse = 1
     if isReverse == 0:
-        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 1))
-            links_dict['origCellName'].append('C'+tmp_2+str(count_1 - 3))
+        if (isCellExists('C'+tmp_1+str(0)) and isCellExists('C'+tmp_1+str(2))):
+            links_dict['cellName'].append('C'+tmp_1+str(count_1 - 1))
+            links_dict['origCellName'].append('C'+tmp_1+str(count_1 - 3))
             links_dict['destCellName'].append('none')
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
-        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
-            links_dict['cellName'].append('C'+tmp_2+str(count_1 - 2))
-            links_dict['origCellName'].append('C'+tmp_2+str(count_1 - 4))
+        if (isCellExists('C'+tmp_1+str(1)) and isCellExists('C'+tmp_1+str(3))):
+            links_dict['cellName'].append('C'+tmp_1+str(count_1 - 2))
+            links_dict['origCellName'].append('C'+tmp_1+str(count_1 - 4))
             links_dict['destCellName'].append('none')
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
     else:
-        if (isCellExists('C'+tmp_2+str(0)) and isCellExists('C'+tmp_2+str(2))):
-            links_dict['cellName'].append('C'+tmp_2+str(0))
-            links_dict['origCellName'].append('C'+tmp_2+str(2))
+        if (isCellExists('C'+tmp_1+str(0)) and isCellExists('C'+tmp_1+str(2))):
+            links_dict['cellName'].append('C'+tmp_1+str(0))
+            links_dict['origCellName'].append('C'+tmp_1+str(2))
             links_dict['destCellName'].append('none')
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
             links_dict['streamDest'].append('E')
             links_dict['boolean bi-directional'].append(BI_DIRECTION)
-        if (isCellExists('C'+tmp_2+str(1)) and isCellExists('C'+tmp_2+str(3))):
-            links_dict['cellName'].append('C'+tmp_2+str(1))
-            links_dict['origCellName'].append('C'+tmp_2+str(3))
+        if (isCellExists('C'+tmp_1+str(1)) and isCellExists('C'+tmp_1+str(3))):
+            links_dict['cellName'].append('C'+tmp_1+str(1))
+            links_dict['origCellName'].append('C'+tmp_1+str(3))
             links_dict['destCellName'].append('none')
             links_dict['length'].append('MIN')
             links_dict['streamOrig'].append('W')
@@ -669,13 +670,15 @@ def getRouteData(orig_cord, dest_cord, serial_num):
         try:
             kShortestPathsObject = deepcopy(kShortestPaths.next())
             node_list = kShortestPathsObject.nodeList
+            print("input origin= ", float(orig_cord.split('|')[0]), float(orig_cord.split('|')[1]))
+            print("origin =",orig_node, "destination =",dest_node ,"path =",node_list)
             routes_dict['zoneSequence'].append(getZoneSequence(node_list))
             routes_dict['routeName'].append(ROUTE_CONV_NAME+str(serial_num)+str(i)) #Make changes to store muliple origin-destination pair
             routes_dict['distance'].append(kShortestPathsObject.cost)
             print("generating links")
             createLinksData(node_list)
             print("generating road intersections")
-            # createRoadIntersections(node_list)
+            createRoadIntersections(node_list)
             print("generating path ends")
             createPathEnds(node_list)
             print("all generated")
