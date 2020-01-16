@@ -22,7 +22,7 @@ DISTANCE_RANGE = 350
 # START_ADDRESS = 'Alberta St, Sydney'
 START_POINT = (-34.01746,151.06285)
 
-MAX_ROUTES = 1
+MAX_ROUTES = 3
 ROUTE_CONV_NAME = 'RT'
 
 TIME_INCREMENT = 0.3
@@ -242,7 +242,7 @@ def createLinksData(node_list):
             count = cell_data[cell_data['cellName'].str[1:len(tmp2)+1]==tmp2].zone.count()
             tmp = tmp2
         # for staright line path x-x-x 
-        for j in range(count - 4):                           # ending with -2 to keep the dest within the limit of count
+        for j in range(count):                           # ending with -2 to keep the dest within the limit of count
             if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+4))):
                 links_dict['cellName'].append('C'+tmp+str(j+2))
                 links_dict['origCellName'].append('C'+tmp+str(j))
@@ -254,7 +254,7 @@ def createLinksData(node_list):
         # for curving down path x-x
         #                         |
         #                         x
-        for j in range(1, count - 2, 2):                           # starting with 1 since the origin is not in -ve, for odd j
+        for j in range(1, count, 2):                           # starting with 1 since the origin is not in -ve, for odd j
             if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
                 links_dict['cellName'].append('C'+tmp+str(j+2))
                 links_dict['origCellName'].append('C'+tmp+str(j))
@@ -266,7 +266,7 @@ def createLinksData(node_list):
         #                       x
         #                       |
         # for curving up path x-x
-        for j in range(0, count - 2, 2):                           # for even j
+        for j in range(0, count, 2):                           # for even j
             if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+3))):
                 links_dict['cellName'].append('C'+tmp+str(j+2))
                 links_dict['origCellName'].append('C'+tmp+str(j))
@@ -278,10 +278,10 @@ def createLinksData(node_list):
         #                     x
         #                     |
         # for curving up path x-x
-        for j in range(1, count - 2, 2):                           # starting with 1 since the origin is not in -ve, for odd j
-            if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
-                links_dict['cellName'].append('C'+tmp+str(j))
-                links_dict['origCellName'].append('C'+tmp+str(j+2))
+        for j in range(1, count, 2):                           # starting with 1 since the origin is not in -ve, for odd j
+            if (isCellExists('C'+tmp+str(j-1)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+1))):
+                links_dict['cellName'].append('C'+tmp+str(j-1))
+                links_dict['origCellName'].append('C'+tmp+str(j))
                 links_dict['destCellName'].append('C'+tmp+str(j+1))
                 links_dict['length'].append(TURN_LENGTH)
                 links_dict['streamOrig'].append('W')
@@ -290,11 +290,11 @@ def createLinksData(node_list):
         # for curving down path x-x
         #                       |
         #                       x
-        for j in range(0, count - 2, 2):                           # for even j
-            if (isCellExists('C'+tmp+str(j+2)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j-1))):
-                links_dict['cellName'].append('C'+tmp+str(j))
-                links_dict['origCellName'].append('C'+tmp+str(j-1))
-                links_dict['destCellName'].append('C'+tmp+str(j+2))
+        for j in range(0, count, 2):                           # for even j
+            if (isCellExists('C'+tmp+str(j+1)) and isCellExists('C'+tmp+str(j)) and isCellExists('C'+tmp+str(j+3))):
+                links_dict['cellName'].append('C'+tmp+str(j+1))
+                links_dict['origCellName'].append('C'+tmp+str(j))
+                links_dict['destCellName'].append('C'+tmp+str(j+3))
                 links_dict['length'].append(TURN_LENGTH)
                 links_dict['streamOrig'].append('W')
                 links_dict['streamDest'].append('S')
