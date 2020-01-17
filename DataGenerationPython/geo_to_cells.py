@@ -1,3 +1,19 @@
+"""
+module: OpenStreetToStochasticAnisoPedCTM
+-------------------------
+
+Script for generating the input files for the StochasticAnisoPedCTMthrough an 
+automated method using data available from Openstreetmap.org. This implemetation 
+uses YenKShortestPaths algorithm to compute various route options which are 
+available to a pedistrian to travel from one point to another. The data from 
+openstreetmap is converted from Graph form to a form that represents the actual 
+street view with various cell segrigations which represents various blocks of 
+space on the street connected with each other to form a street network. This street 
+network is used by StochasticAnisoPedCTM to simulate pedistrian movement pattern.
+
+Author: Shubhankar Mathur
+"""
+
 import pandas as pd
 import numpy as np
 from math import ceil, sqrt
@@ -11,28 +27,29 @@ import osmnx as ox
 import networkx as nx
 from YenKShortestPaths import YenKShortestPaths
 
+#Parameters impacting the radius of input data
+DISTANCE_RANGE = 350                #radius of input area in meters
+START_POINT = (-34.01746,151.06285) #lat,long
+MAX_ROUTES = 3                      #NUmber of route options
+
+#File Input Directory
+odMatrixFileName = "ODMatrix.txt"
+
+#File Output Directory     
+FILE_CREATION_PATH = ""             #Current directory by default
+FILE_FORMAT = ".txt"
+
+#DO NOT CHANGE VALUE OF ANY VARIABLE BEYOND THIS POINT UNLESS MODIFYING THE CODE
 #constant values
 SURFACE_AREA_CELL = 2.25
-CELL_EDGE_LENGTH = 1 #1.5
+CELL_EDGE_LENGTH = 1
 NUM_CELLS_PER_WIDTH = 2
 NUM_CELLS_PER_ZONE = NUM_CELLS_PER_WIDTH * 2
 MULT_FACTOR = 10000000
-DISTANCE_RANGE = 350
-# START_ADDRESS = '61 Boronia Street, Kensington, Sydney'
-# START_ADDRESS = 'Alberta St, Sydney'
-START_POINT = (-34.01746,151.06285)
-
-MAX_ROUTES = 3
 ROUTE_CONV_NAME = 'RT'
 
 TIME_INCREMENT = 0.3
 TRAVEL_TIME = 10.6
-
-
-# FILE_CREATION_PATH = "D:\\UNSW\\rCITI\\OSMNX Python"       
-FILE_CREATION_PATH = "D:\\Documents\\GitHub\\PedestrianRouting\\DataGenerationPython"
-odMatrixFileName = FILE_CREATION_PATH + '\\ODMatrix.txt'
-FILE_FORMAT = ".txt"
 
 STRAIGHT_LENGTH = 1.5
 TURN_LENGTH = 1.0607
@@ -41,6 +58,9 @@ BI_DIRECTION = 'true'
 NEW_MAX_CORD = 50
 NEW_MIN_CORD = 0
 
+print("Generate Data.....Do not close the window")
+
+#Function will create the dictionary which will store all the data related to cells
 def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node_coordinates):
     global NUM_CELLS_PER_ZONE
     cells_dict = {'cellName':[], 'zone':[], 'surfaceSize':[], 'coordinate':[]}
@@ -54,7 +74,6 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
             display_tot_count = display_tot_count + 1
         if display_tot_count == 0:
             display_tot_count = 2
-        print("tot_count:",tot_count,"range:",display_tot_count)
         for i in range(display_tot_count):    #for 150 - 4 and 0.005
             cell_Name = getCellName(str(node[0]) + str(node[1]) ,i)
             cells_dict['cellName'].append(cell_Name)
@@ -63,27 +82,29 @@ def createCells(node_list, lat_List, lon_list, node_length, node_link_list, node
             cells_dict['coordinate'].append(getCoordinates(lat_min_par, long_min_par, node, node_coordinates, i, display_tot_count))
     return cells_dict
 
+#Function to translate the geo-pane distance to coordinate pane length
 def translateLength(node):
-    # print(node)
-    # print(node_length[(node_length['u'] == node[0]) & (node_length['v'] == node[1])]["length"])
     length = list(node_length[(node_length['u'] == node[0]) & (node_length['v'] == node[1])]["length"])[0]
     global CELL_EDGE_LENGTH
     translatedLength = (length // CELL_EDGE_LENGTH) * CELL_EDGE_LENGTH
     return translatedLength
 
+#Get the number of cells for each path between 2 nodes
 def getCellCount(node):
     global CELL_EDGE_LENGTH
     global NUM_CELLS_PER_WIDTH
     count = ((translateLength(node))//CELL_EDGE_LENGTH) * NUM_CELLS_PER_WIDTH
     return count
 
+#Get the cell name
 def getCellName(osmId, serial):
-    #start with C followed by osmid and serial num C<osmnxId><serial num>
+    #Convention: C<osmnxId><serial num>
     cellName = 'C' + str(osmId) + str(serial)
     return cellName
 
+#Get the zone name
 def getZoneName(cellName, serial):
-    #start Z<cellName><serial num>
+    #Convention: Z<cellName><serial num>
     zoneName = 'Z' + cellName + str(serial)
     return zoneName
 
@@ -91,6 +112,7 @@ def getSurfaceArea():
     global SURFACE_AREA_CELL
     return SURFACE_AREA_CELL
 
+#Get the coordinate points for each cell
 def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_count):
     #each block is defined as 1.5 units in length  "(-1.5|0) (0|0) (0|1.5) (-1.5|1.5)"
     lat1 = list(node_coordinates[node_coordinates['osmid']==node[0]]['x'])[0]
@@ -101,9 +123,6 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     nor_lat1, nor_lon1 = getNormalizedCoordinates(lat_min, long_min, lat1, lon1)
     nor_lat2, nor_lon2 = getNormalizedCoordinates(lat_min, long_min, lat2, lon2)
     distance = getDistance(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
-    # print("Total count", tot_count, "new count", distance/1.5, "distance", distance)
-    
-
     MULTIPLI = 0.001
     nor_lat1 = nor_lat1* MULTIPLI #  (length/distance)
     nor_lon1 = nor_lon1* MULTIPLI #  (length/distance)
@@ -112,9 +131,6 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     distance = getDistance(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     if distance == 0:
         return
-    # print("Total count", tot_count, "new count", distance/1.5, "distance", distance, "reduction" , tot_count/(distance/1.5))
-    # print("ratio = ", (length/distance))
-    # print(str(nor_lat1) + ' ' + str(nor_lon1) + ' ' + str(nor_lat2) + ' ' + str(nor_lon2))
     slope = getSlope(nor_lat1, nor_lon1, nor_lat2, nor_lon2)
     dx1, dy1 = getDivisionPoint((serial_num//2), nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
     dx2, dy2 = getDivisionPoint((serial_num//2) + 1, nor_lat1, nor_lon1, nor_lat2, nor_lon2, ceil(tot_count/2))
@@ -124,21 +140,25 @@ def getCoordinates(lat_min, long_min, node, node_coordinates, serial_num, tot_co
     cord = '(' + str(dx1+2) + '|' + str(dy1+2) +')' + ' (' + str(px1+2) + '|' + str(py1+2) +')' + ' (' + str(px2+2) + '|' + str(py2+2) +')' + ' (' + str(dx2+2) + '|' + str(dy2+2) +')'
     return cord
 
+#Normalize geo-coordinates to fit the cartesian plane 
 def getNormalizedCoordinates(lat_min, long_min, lat, lon):
     global MULT_FACTOR
     nor_lat = ((abs(lat) - abs(lat_min))*MULT_FACTOR)
     nor_lon = ((abs(lon) - abs(long_min))*MULT_FACTOR)
     return nor_lat, nor_lon
 
+#Distance between 2 points in cartesian plane
 def getDistance(x1, y1, x2, y2):
     distance = sqrt((x2 - x1)**2 + (y2 - y1)**2)
     return distance
 
+#Slope between 2 points in cartesian plane
 def getSlope(x1, y1, x2, y2):
     slope = (y2 - y1)/(x2 - x1)
     perpendicularSlope = (1/slope)*(-1)
     return perpendicularSlope
 
+#Get the min-max coordinates for normalization (shift origin to (0,0))
 def getNormalizeParameter(lat_List, lon_List):
     lat_min = 0
     long_min = 0
@@ -158,12 +178,11 @@ def getNormalizeParameter(lat_List, lon_List):
         long_max = min(lon_List)
     return lat_min, long_min, lat_max, long_max
 
+#Get the edge coordinates of the cells perpendicular  to central line joining the 2 nodes
 def getPerprndicularCoordinates(x1, y1, slope, serial_num):
     a = slope**2 + 1
     b = (slope**2 + 1)*y1*(-2)
     c = ((slope**2 + 1)*(y1**2)) - ((slope**2)*(CELL_EDGE_LENGTH**2))
-    # print("a , b , c = ", a, b, c)
-    # print(x1, y1, slope, serial_num)
     if serial_num%2 == 0:
         y_sol = ((-1)*b + sqrt(b**2 - 4*a*c))/(2*a)
         x_sol = ((y_sol - y1)/slope) + x1
@@ -172,21 +191,20 @@ def getPerprndicularCoordinates(x1, y1, slope, serial_num):
         x_sol = ((y_sol - y1)/slope) + x1
     return x_sol, y_sol
 
+#Get the edges of cell that fall on the central line joining the 2 nodes
 def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
-    # print("part, x1, y1, x2, y2, tot_count = ", part, x1, y1, x2, y2, tot_count)
     dx = ((part*x2) + ((tot_count - part)*x1))/tot_count
     dy = ((part*y2) + ((tot_count - part)*y1))/tot_count
-    # print("dx, dy = ", dx, dy)
     return dx, dy
 
-
-# G4 = ox.graph_from_address(address=START_ADDRESS, distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
+#Get the street data from the Open Street Map library
 G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
 graph = deepcopy(G4)
 
+#Convert data into graphs
 data = ox.save_load.graph_to_gdfs(G4, nodes=True, edges=True, node_geometry=False, fill_edge_geometry=False)
 
-node_coordinates = data[0][["osmid","x","y"]]  #output is pandas framework, x is lat, y is long 
+node_coordinates = data[0][["osmid","x","y"]]       #output is pandas framework, x is lat, y is long 
 node_length = data[1][["u","v","length","oneway"]]  #output is pandas framework u and v are osmids for the nodes
 
 lat_list = []
@@ -204,12 +222,14 @@ cells_dict = createCells(node_list, lat_list, lon_list, node_length, node_link_l
 
 cell_data = pd.DataFrame.from_dict(cells_dict)
 
+#Generate the cell Data
 cell_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_cells_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
 # ------------------------------------ Blockage File ------------------------------------------------------#
 
 blockage_dict = {'cellName':[], 'startTime':[], 'endTime':[], 'percentage':[]}
 
+#Defalt is set to 0% blockage and 0 as start and end time in seconds
 blockage_dict['cellName'] = cells_dict['cellName']
 blockage_dict['startTime'] = [0 for _ in range(len(blockage_dict['cellName']))]
 blockage_dict['endTime'] = [0 for _ in range(len(blockage_dict['cellName']))]
@@ -217,21 +237,21 @@ blockage_dict['percentage'] = [0 for _ in range(len(blockage_dict['cellName']))]
 
 blockage_data = pd.DataFrame.from_dict(blockage_dict)
 
+#Generate the cell blockage list file
 blockage_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_blockage_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
 # -------------------------- Code for generating the links -------------------------------------------------#
 
 links_dict = {'cellName':[], 'origCellName':[], 'destCellName':[], 'length':[], 'streamOrig':[], 'streamDest':[], 'boolean bi-directional':[]}
 
+#Check if a particular cell exists in the system
 def isCellExists(cellName):
     if cellName in cells_dict['cellName']:
         return True
     return False
 
-#get the cell names while finding the routes
-
+#Generate the data related to links connecting the cells in a path
 def createLinksData(node_list):
-    # print('generating links =', node_list)
     temp_list = []
     for i in range(len(node_list) -1):
         tmp1 = str(node_list[i]) + str(node_list[i+1])
@@ -300,10 +320,7 @@ def createLinksData(node_list):
                 links_dict['streamDest'].append('S')
                 links_dict['boolean bi-directional'].append(BI_DIRECTION)
 
-'''
-        NEED TO HANDLE EDGE CASES OF ROAD INTERSECTION, START AND END POINT
-'''
-
+#Generate the data related to links connecting the cells of 2 different path in a route
 def createRoadIntersections(node_list):
     temp_list = []
     for i in range(len(node_list) -2):
@@ -546,6 +563,7 @@ def createRoadIntersections(node_list):
                 links_dict['streamDest'].append('E')
                 links_dict['boolean bi-directional'].append(BI_DIRECTION)
 
+#Generate the data related to links connecting the origin and destination cells
 def createPathEnds(node_list):
     #origin cells
     tmp1 = str(node_list[0]) + str(node_list[1])
@@ -640,8 +658,8 @@ def createPathEnds(node_list):
 
 routes_data_dict = {'routeName':[],'zoneSequence':[], 'distance':[]}
 
+# Get the list of zones which are part of the route
 def getZoneSequence(node_list):
-    # print('route list =', node_list)
     temp_list = []
     for i in range(len(node_list) -1):
         flagRev = 0
@@ -661,6 +679,7 @@ def getZoneSequence(node_list):
                 temp_list.append('Z'+tmp+str(j))
     return '-'.join(str(val) for val in temp_list)
 
+#Get the data related to routes between source and destination nodes 
 def getRouteData(orig_cord, dest_cord, serial_num):
     orig_node = ox.get_nearest_node(G4, (float(orig_cord.split('|')[0]), float(orig_cord.split('|')[1])))
     dest_node = ox.get_nearest_node(G4, (float(dest_cord.split('|')[0]), float(dest_cord.split('|')[1])))
@@ -668,24 +687,20 @@ def getRouteData(orig_cord, dest_cord, serial_num):
     kShortestPaths = YenKShortestPaths(G4, orig_node, dest_node, 'length')
     for i in range(MAX_ROUTES):
         try:
+            #get the cell names while finding the routes
             kShortestPathsObject = deepcopy(kShortestPaths.next())
             node_list = kShortestPathsObject.nodeList
-            print("input origin= ", float(orig_cord.split('|')[0]), float(orig_cord.split('|')[1]))
-            print("origin =",orig_node, "destination =",dest_node ,"path =",node_list)
             routes_dict['zoneSequence'].append(getZoneSequence(node_list))
-            routes_dict['routeName'].append(ROUTE_CONV_NAME+str(serial_num)+str(i)) #Make changes to store muliple origin-destination pair
+            routes_dict['routeName'].append(ROUTE_CONV_NAME+str(serial_num)+str(i))
             routes_dict['distance'].append(kShortestPathsObject.cost)
-            print("generating links")
             createLinksData(node_list)
-            print("generating road intersections")
             createRoadIntersections(node_list)
-            print("generating path ends")
             createPathEnds(node_list)
-            print("all generated")
         except:
             pass
     return routes_dict
 
+#Merge the dictionaries of all the routes
 def mergeRouteDataDict(routes_data_dict, routes_dict):
     for i in range(len(routes_dict['zoneSequence'])):
         routes_data_dict['zoneSequence'].append(routes_dict['zoneSequence'][i])
@@ -693,18 +708,12 @@ def mergeRouteDataDict(routes_data_dict, routes_dict):
         routes_data_dict['distance'].append(routes_dict['distance'][i])
     return routes_data_dict
 
-
-'''
-route = nx.shortest_path(G4, orig_node, dest_node, weight='length')
-fig, ax = ox.plot_graph_route(G4, route, node_size=0)
-'''
 # -------------------------- Code for generating the Demand File -------------------------------------------------#
-
-
 ODMatrixList = []
 
 demand_dict = {'routeName':[], 'depTime':[], 'numPpl':[], 'travelTime':[], 'routeName2':[],'routeName3':[]}
 
+#Normalize time from time format to interger
 def getNormalizedTime(min_time, curr_time):
     temp_time = dt.datetime.strptime(curr_time, '%H:%M')
     nor_time  = (temp_time - min_time).seconds
@@ -718,6 +727,7 @@ def getMinTime(ODMatrixList):
             min_time = temp_time
     return min_time
 
+#Read the OD Matrix data
 with open(odMatrixFileName, encoding="utf8") as dataFile:
     data = csv.reader(dataFile, delimiter=',')
     for row in data:
@@ -726,6 +736,7 @@ with open(odMatrixFileName, encoding="utf8") as dataFile:
 
 min_time = getMinTime(ODMatrixList)
 
+#Generate the Demand file data
 serial_num = 0
 for row in ODMatrixList:
     start_time = getNormalizedTime(min_time, row[2])
@@ -749,28 +760,18 @@ for row in ODMatrixList:
     demand_dict['depTime'].append(str(start_time))
     demand_dict['travelTime'].append(str(TRAVEL_TIME))
     serial_num = serial_num + 1
-    # rd.seed(10)
-    # TIME_INCREMENT_temp = (15*60)/demand
-    # if (TIME_INCREMENT_temp < TIME_INCREMENT):
-    #     TIME_INCREMENT = TIME_INCREMENT_temp
-    # for i in range(demand):
-    #     demand_dict['routeName'].append(routes_dict['routeName'][0])
-    #     demand_dict['routeName2'].append(routes_dict['routeName'][0])           #changes made here for testing
-    #     demand_dict['routeName3'].append(routes_dict['routeName'][0])
-    #     demand_dict['depTime'].append(str(start_time + i*rd.uniform(0,TIME_INCREMENT)))
-    #     demand_dict['travelTime'].append(str(TRAVEL_TIME))
 
+#Generate the demand file
 demand_data = pd.DataFrame.from_dict(demand_dict)
 demand_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_demand_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
-# print('route dict =',routes_dict)
-
-
-# print('routes_data_dict =', routes_data_dict)
+#Generate the route file
 route_data = pd.DataFrame.from_dict(routes_data_dict)
 route_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_route_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
 
-
+#Generate the link file
 links_data = pd.DataFrame.from_dict(links_dict)
 links_data = links_data.drop_duplicates()
 links_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_links_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+
+print("All files generated")
