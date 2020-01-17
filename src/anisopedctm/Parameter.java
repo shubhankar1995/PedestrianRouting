@@ -84,8 +84,8 @@ public class Parameter {
 	// Write the aggregated table at the end of the simulation
 	public final boolean writeAggTable;
 
-        public static final double alpha = 0.5;  // ** new
-        public static final double beta = 0.7;     // ** new
+        public static double alpha;
+        public static double beta;
         
 	//file paths input
 	public final String inputDir;
@@ -123,7 +123,8 @@ public class Parameter {
 	public Parameter(String inDir, String outDir, String paramFile, String paramRangeFile,
 			String linkFile, String cellFile, String routeFile, String funDiag, double cflFact,
 			boolean textOutput, boolean textDebug, boolean visualOut, boolean numbers, boolean cellNames, String correspFile,
-			String demandFormat, String demandFile, boolean writeAggTable, String calibMode, double aggPerCalib, String blockageFile) {
+			String demandFormat, String demandFile, boolean writeAggTable, String calibMode, double aggPerCalib, String blockageFile,
+                        double alphaParam, double betaParam) {
 
 		outputDir = outDir;
 		inputDir = inDir;
@@ -177,8 +178,10 @@ public class Parameter {
 		}
 
 		minLinkLength = Double.NaN;
+                alpha = alphaParam;
+                beta = betaParam;
 	}
-
+        
 	//set parameters associated with fundamental diagram and route choice model
 	public void setFDRChParam(double vf, Double[] shapeParam, double mu) {
 

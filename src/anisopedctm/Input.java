@@ -12,6 +12,9 @@ import java.util.Hashtable;
  * Input class
  *
  * @author Flurin Haenseler, Gael Lederrey
+ * 
+ * @version StochasticAnisoPedCTM v1.0
+ * @author Shubhankar Mathur
  *
  */
 
@@ -71,6 +74,8 @@ public class Input {
 		String paramRangeFile = "";
 		String calibMode = "";
 		double aggPeriodCalib = 0.0;
+                double alpha = 0.0;
+                double beta = 0.0;
 
 		//extract information from each line
 		try {
@@ -274,7 +279,20 @@ public class Input {
 				throw new IllegalArgumentException("Illegal value on line 31. It should be 'blockage configuration file name: "
 							+ "path/to/blockage/configuration/f/file.txt'");
 			}
+                        
+                        lineElements = fileLines[34].split(":");
+			if (lineElements[0].equals("alpha")) {
+				alpha = Double.valueOf(lineElements[1]);
+			} else {
+				throw new IllegalArgumentException("Illegal value on line 34. It should have correct value of Stochastic alpha parameter in decimal");
+			}
 			
+                        lineElements = fileLines[35].split(":");
+			if (lineElements[0].equals("beta")) {
+				beta = Double.valueOf(lineElements[1]);
+			} else {
+				throw new IllegalArgumentException("Illegal value on line 34. It should have correct value of Stochastic beta parameter in decimal");
+			}
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -282,7 +300,7 @@ public class Input {
 
 		return new Parameter(inDir, outDir, paramFile, paramRangeFile, linkFile, cellFile, routeFile,
 				funDiagName, cflFactor, textOutput, textDebug, visualOut, showNumbers, showCellNames, correspFile,
-				demandFormat, demandFile, writeAggTable, calibMode, aggPeriodCalib, blockageFile);
+				demandFormat, demandFile, writeAggTable, calibMode, aggPeriodCalib, blockageFile, alpha, beta);
 	}
 
 
