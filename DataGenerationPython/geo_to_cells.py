@@ -198,7 +198,7 @@ def getDivisionPoint(part, x1, y1, x2, y2, tot_count):
     return dx, dy
 
 #Get the street data from the Open Street Map library
-G4 = ox.graph_from_point(START_POINT,distance=350, distance_type='network', network_type='walk')
+G4 = ox.graph_from_point(START_POINT,distance=DISTANCE_RANGE, distance_type='network', network_type='walk')
 graph = deepcopy(G4)
 
 #Convert data into graphs
