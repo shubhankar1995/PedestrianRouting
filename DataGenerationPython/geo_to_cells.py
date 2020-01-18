@@ -35,8 +35,19 @@ MAX_ROUTES = 3                      #NUmber of route options
 #File Input Directory
 odMatrixFileNamePath = "ODMatrix.txt"
 
-#File Output Directory     
-FILE_CREATION_PATH = ""             #Current directory by default
+#File Output name
+CELL_FILE_NAME = "new_cells"
+BLOCKAGE_FILE_NAME = "new_blockage"
+DEMAND_FILE_NAME = "new_demand"
+ROUTE_FILE_NAME = "new_route"
+LINKS_FILE_NAME = "new_links"
+
+#File Output Directory             
+FILE_CREATION_PATH_CELLS = ""           #Current (root) directory by default
+FILE_CREATION_PATH_BLOCKAGE = ""
+FILE_CREATION_PATH_DEMAND = ""
+FILE_CREATION_PATH_ROUTE = ""
+FILE_CREATION_PATH_LINKS = ""
 
 #DO NOT CHANGE VALUE OF ANY VARIABLE BEYOND THIS POINT UNLESS MODIFYING THE CODE
 #constant values
@@ -223,7 +234,7 @@ cells_dict = createCells(node_list, lat_list, lon_list, node_length, node_link_l
 cell_data = pd.DataFrame.from_dict(cells_dict)
 
 #Generate the cell Data
-cell_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_cells_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+cell_data.to_csv(os.path.join(FILE_CREATION_PATH_CELLS, CELL_FILE_NAME + FILE_FORMAT), index=False)
 
 # ------------------------------------ Blockage File ------------------------------------------------------#
 
@@ -238,7 +249,7 @@ blockage_dict['percentage'] = [0 for _ in range(len(blockage_dict['cellName']))]
 blockage_data = pd.DataFrame.from_dict(blockage_dict)
 
 #Generate the cell blockage list file
-blockage_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_blockage_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+blockage_data.to_csv(os.path.join(FILE_CREATION_PATH_BLOCKAGE, BLOCKAGE_FILE_NAME  + FILE_FORMAT), index=False)
 
 # -------------------------- Code for generating the links -------------------------------------------------#
 
@@ -763,15 +774,15 @@ for row in ODMatrixList:
 
 #Generate the demand file
 demand_data = pd.DataFrame.from_dict(demand_dict)
-demand_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_demand_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+demand_data.to_csv(os.path.join(FILE_CREATION_PATH_DEMAND, DEMAND_FILE_NAME + FILE_FORMAT), index=False)
 
 #Generate the route file
 route_data = pd.DataFrame.from_dict(routes_data_dict)
-route_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_route_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+route_data.to_csv(os.path.join(FILE_CREATION_PATH_ROUTE, ROUTE_FILE_NAME + FILE_FORMAT), index=False)
 
 #Generate the link file
 links_data = pd.DataFrame.from_dict(links_dict)
 links_data = links_data.drop_duplicates()
-links_data.to_csv(os.path.join(FILE_CREATION_PATH, "new_links_"+ str(DISTANCE_RANGE) + FILE_FORMAT), index=False)
+links_data.to_csv(os.path.join(FILE_CREATION_PATH_LINKS, LINKS_FILE_NAME + FILE_FORMAT), index=False)
 
 print("All files generated")
