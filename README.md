@@ -3,13 +3,19 @@ StochasticAnisoPedCTM v1.0
 
 StochasticAnisoPedCTM is distributed free of charge. We ask the user to please explicitly mention the use of the package when publishing results, using the following reference:
 
-
-_____________________________________________________________
+?????????????????????????????
 
 Please see LICENSE.md for details on usage.
 
 ## About
-This java package is an implementation of macroscopic pedestrian loading model for multi-directional, anisotropic, stochastic and congested pedestrian flow. This package can help in analyzing the movement pattern of the pedestrians to enable better planning of the walkways and the repair works which are required which would lead to the lowest impact on traffic.
+This repository has two components to it.
+1. JAVA package for running the simulations.
+2. Python scipt for generating the file which will act as the input to the JAVA package. 
+
+The JAVA package is an implementation of macroscopic pedestrian loading model for multi-directional, anisotropic, stochastic and congested pedestrian flow. This package can help in analyzing the movement pattern of the pedestrians to enable better planning of the walkways and the repair works which are required which would lead to the lowest impact on traffic.
+
+The Python Script is for generating the input files for the StochasticAnisoPedCTM through an automated method using data available from Openstreetmap.org. This implemetation uses the YenKShortestPaths algorithm to compute various route options that are available 
+to a pedestrian to travel from one point to another. The data from OpenStreetMap is converted from Graph form to a form that represents the actual street view with various cell segregations which represents various blocks of space on the street connected with each other to form a street network. This street the network is used by StochasticAnisoPedCTM to simulate the pedestrian movement pattern.
 
 ## New with this version (StochasticAnisoPedCTM v1.0)
 - Automated generation of input files based on ODMatrix.
