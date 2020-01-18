@@ -17,7 +17,7 @@ The JAVA package is an implementation of macroscopic pedestrian loading model fo
 The Python Script is for generating the input files for the StochasticAnisoPedCTM through an automated method using data available from Openstreetmap.org. This implemetation uses the YenKShortestPaths algorithm to compute various route options that are available 
 to a pedestrian to travel from one point to another. The data from OpenStreetMap is converted from Graph form to a form that represents the actual street view with various cell segregations which represents various blocks of space on the street connected with each other to form a street network. This street the network is used by StochasticAnisoPedCTM to simulate the pedestrian movement pattern.
 
-## New with this version (StochasticAnisoPedCTM v1.0)
+## New features
 - Automated generation of input files based on ODMatrix.
 - The street network is generated from OpenStreetMap.org and the desired input files are generated for the simulation.
 - Ability to handle multiple route options and split the demand based on the stochastic route choice.
