@@ -33,14 +33,14 @@ START_POINT = (-34.01746,151.06285) #lat,long
 MAX_ROUTES = 3                      #NUmber of route options
 
 #File Input Directory
-odMatrixFileName = "ODMatrix.txt"
+odMatrixFileNamePath = "ODMatrix.txt"
 
 #File Output Directory     
 FILE_CREATION_PATH = ""             #Current directory by default
-FILE_FORMAT = ".txt"
 
 #DO NOT CHANGE VALUE OF ANY VARIABLE BEYOND THIS POINT UNLESS MODIFYING THE CODE
 #constant values
+FILE_FORMAT = ".txt"
 SURFACE_AREA_CELL = 2.25
 CELL_EDGE_LENGTH = 1
 NUM_CELLS_PER_WIDTH = 2
@@ -728,7 +728,7 @@ def getMinTime(ODMatrixList):
     return min_time
 
 #Read the OD Matrix data
-with open(odMatrixFileName, encoding="utf8") as dataFile:
+with open(odMatrixFileNamePath, encoding="utf8") as dataFile:
     data = csv.reader(dataFile, delimiter=',')
     for row in data:
         if '#' not in row[0]:
