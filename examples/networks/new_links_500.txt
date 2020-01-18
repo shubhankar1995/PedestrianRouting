@@ -1,2 +1,0 @@
-cellName,origCellName,destCellName,length,streamOrig,streamDest,boolean bi-directional
-C123428721512342872263,C123428721512342872261,C123428721512342872262,1.0607,W,S,true

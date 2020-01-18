@@ -1,2 +1,0 @@
-routeName,depTime,numPpl,travelTime,routeName2,routeName3
-RT00,0,10,10.6,NA,NA

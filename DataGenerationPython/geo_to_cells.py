@@ -2,14 +2,14 @@
 module: OpenStreetToStochasticAnisoPedCTM
 -------------------------
 
-Script for generating the input files for the StochasticAnisoPedCTMthrough an 
-automated method using data available from Openstreetmap.org. This implemetation 
-uses YenKShortestPaths algorithm to compute various route options which are 
-available to a pedistrian to travel from one point to another. The data from 
-openstreetmap is converted from Graph form to a form that represents the actual 
-street view with various cell segrigations which represents various blocks of 
-space on the street connected with each other to form a street network. This street 
-network is used by StochasticAnisoPedCTM to simulate pedistrian movement pattern.
+Python Script for generating the input files for the StochasticAnisoPedCTMthrough an 
+automated method using data available from Openstreetmap.org. This implemetation uses 
+the YenKShortestPaths algorithm to compute various route options that are available 
+to a pedestrian to travel from one point to another. The data from OpenStreetMap is 
+converted from Graph form to a form that represents the actual street view with various
+cell segregations which represents various blocks of space on the street connected 
+with each other to form a street network. This street the network is used by 
+StochasticAnisoPedCTM to simulate the pedestrian movement pattern.
 
 Author: Shubhankar Mathur
 """

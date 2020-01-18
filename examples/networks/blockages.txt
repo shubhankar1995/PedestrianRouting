@@ -1,2 +1,0 @@
-cell, starttime, endtime, blockpercent
-C18,0,180,88
