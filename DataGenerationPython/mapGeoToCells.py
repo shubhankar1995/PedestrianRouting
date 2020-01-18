@@ -1,8 +1,8 @@
 """
-module: OpenStreetToStochasticAnisoPedCTM
+module: mapGeoToCells
 -------------------------
 
-Python Script for generating the input files for the StochasticAnisoPedCTMthrough an 
+Python Script for generating the input files for the StochasticAnisoPedCTM through an 
 automated method using data available from Openstreetmap.org. This implemetation uses 
 the YenKShortestPaths algorithm to compute various route options that are available 
 to a pedestrian to travel from one point to another. The data from OpenStreetMap is 

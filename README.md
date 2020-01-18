@@ -32,8 +32,8 @@ to a pedestrian to travel from one point to another. The data from OpenStreetMap
 ## How to use
 1. Make sure all the required python libraries are installed. The `osmnx python library` can be installed using `https://github.com/gboeing/osmnx`
 2. If you are in the root directory, parse to the `DataGenerationPython` folder using the command `cd DataGenerationPython`
-3. Open the `geo_to_cells.py` file and replace the values of the variables `DISTANCE_RANGE`, `START_POINT`, `MAX_ROUTES`, `odMatrixFileNamePath`, `CELL_FILE_NAME`, `DEMAND_FILE_NAME` ,`BLOCKAGE_FILE_NAME`, `LINKS_FILE_NAME`, `ROUTE_FILE_NAME`, `FILE_CREATION_PATH_CELLS`, `FILE_CREATION_PATH_DEMAND`, `FILE_CREATION_PATH_BLOCKAGE`, `FILE_CREATION_PATH_ROUTE`, `FILE_CREATION_PATH_LINKS` with the desired ones.
-4. Run the python script `geo_to_cells.py` by running the command in the command shell. `python3 geo_to_cells.py`
+3. Open the `mapGeoToCells.py` file and replace the values of the variables `DISTANCE_RANGE`, `START_POINT`, `MAX_ROUTES`, `odMatrixFileNamePath`, `CELL_FILE_NAME`, `DEMAND_FILE_NAME` ,`BLOCKAGE_FILE_NAME`, `LINKS_FILE_NAME`, `ROUTE_FILE_NAME`, `FILE_CREATION_PATH_CELLS`, `FILE_CREATION_PATH_DEMAND`, `FILE_CREATION_PATH_BLOCKAGE`, `FILE_CREATION_PATH_ROUTE`, `FILE_CREATION_PATH_LINKS` with the desired ones.
+4. Run the python script `mapGeoToCells.py` by running the command in the command shell. `python3 mapGeoToCells.py`
 5. Update the `scenario` and `parameters` files in the example folder or create your own scenrio file.
 6. All the packages have been placed in the folder `StochasticAnisoPedCTM\src\anisopedctm`.Now navigate to the src folder by using the command `cd ..\StochasticAnisoPedCTM\src`. You can edit the sample `AnisoPedCTM.java` file which has been placed in that folder or create your own class with the main function. To run the sample class file execute the  file.
 
