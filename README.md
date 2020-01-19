@@ -18,10 +18,13 @@ The Python Script is for generating the input files for the StochasticAnisoPedCT
 to a pedestrian to travel from one point to another. The data from OpenStreetMap is converted from Graph form to a form that represents the actual street view with various cell segregations which represents various blocks of space on the street connected with each other to form a street network. This street the network is used by StochasticAnisoPedCTM to simulate the pedestrian movement pattern.
 
 ## New features
-- Automated generation of input files based on ODMatrix.
 - The street network is generated from OpenStreetMap.org and the desired input files are generated for the simulation.
-- Ability to handle multiple route options and split the demand based on the stochastic route choice.
-- Introduced time based cell blockage(certain percentage of cell area becomes inaccessible) to simulate repair works or traffic signals.
+- Generate street network cells and links using OpenStreetMap.org
+- Generate aggregated demand based on the ODMatrix.
+- Find N-Optimum routes choices between the origin and destination.
+- Ability to handle multiple route options and split the demand based on the stochastic route choice during the simulation.
+- Introduced time-based cell blockage(a certain percentage of cell area becomes inaccessible) to simulate repair works or traffic signals.
+- Enhanced visualization to incorporate streets in any orientation.
 
 ### Input from OpenStreetMap.org
 <img src="snapshots/OpenStreetMap.png" height="400">
